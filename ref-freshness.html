@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Reference Freshness Checker (DOCX)</title>
+  <style>
+    :root { color-scheme: light dark; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 24px; line-height: 1.35; }
+    .wrap { max-width: 1000px; margin: 0 auto; }
+    h1 { margin: 0 0 8px; font-size: 20px; }
+    p  { margin: 8px 0; }
+    .card { border: 1px solid rgba(127,127,127,.35); border-radius: 12px; padding: 14px; margin: 14px 0; background: rgba(127,127,127,.06); }
+    label { display:block; font-weight: 600; margin: 10px 0 6px; }
+    input[type="number"], input[type="text"] { width: 220px; padding: 10px; border-radius: 10px; border: 1px solid rgba(127,127,127,.35); }
+    input[type="file"] { padding: 8px 0; }
+    button { padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(127,127,127,.35); cursor: pointer; }
+    button:disabled { opacity: .6; cursor: not-allowed; }
+    .row { display:flex; gap:14px; flex-wrap:wrap; align-items:end; }
+    .muted { opacity: .8; font-size: 13px; }
+    .warn { color: #b45309; }
+    .ok { color: #15803d; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: 12px; }
+    .result { padding: 10px; border-radius: 10px; border: 1px solid rgba(127,127,127,.25); background: rgba(127,127,127,.04); margin-top: 10px; }
+    .pill { display:inline-block; padding: 2px 8px; border-radius: 999px; border: 1px solid rgba(127,127,127,.35); font-size: 12px; margin-right: 6px; }
+    .grid { display:grid; gap: 10px; }
+    a { word-break: break-word; }
+    details > summary { cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Reference Freshness Checker (DOCX → finds older in-text citations and suggests newer sources)</h1>
+    <p class="muted">
+      Upload a <span class="mono">.docx</span> file, set a cutoff year, and the app will flag in-text citations older than the cutoff
+      (e.g., <span class="mono">(Smith, 2012)</span> or <span class="mono">Smith (2012)</span>). For each flagged spot, it extracts nearby context
+      and queries Crossref for newer candidate references.
+    </p>
+
+    <div class="card">
+      <div class="row">
+        <div>
+          <label for="docx">Word document (.docx)</label>
+          <input id="docx" type="file" accept=".docx" />
+          <div class="muted">Tip: This uses a client-side DOCX-to-text converter (Mammoth).</div>
+        </div>
+        <div>
+          <label for="cutoff">Cutoff year (flag anything older)</label>
+          <input id="cutoff" type="number" min="1900" max="2100" value="2018" />
+        </div>
+        <div>
+          <label for="email">Crossref contact (recommended)</label>
+          <input id="email" type="text" placeholder="you@university.edu" />
+          <div class="muted">Crossref prefers a contact email in the User-Agent.</div>
+        </div>
+        <div>
+          <button id="analyze" disabled>Analyze</button>
+        </div>
+      </div>
+      <p class="muted">
+        Privacy note: The DOCX is processed locally in your browser. Only small keyword queries (not your full paper) are sent to Crossref to retrieve suggested references.
+      </p>
+    </div>
+
+    <div id="status" class="muted"></div>
+    <div id="results"></div>
+
+    <details class="card">
+      <summary><strong>What counts as a “citation” here?</strong> (click)</summary>
+      <div class="muted" style="margin-top:10px">
+        This demo looks for common APA-style in-text years:
+        <ul>
+          <li>Parenthetical: <span class="mono">(Author, 2010)</span>, <span class="mono">(Author &amp; Author, 2010)</span>, <span class="mono">(Author et al., 2010)</span></li>
+          <li>Narrative: <span class="mono">Author (2010)</span></li>
+        </ul>
+        It won’t perfectly parse every style or complex citation cluster. You can expand it if you need MLA/Chicago or multiple years.
+      </div>
+    </details>
+  </div>
+
+  <!-- Mammoth: DOCX -> HTML/text -->
+  <script src="https://unpkg.com/mammoth@1.6.0/mammoth.browser.min.js"></script>
+
+  <script>
+    const elDocx = document.getElementById('docx');
+    const elCutoff = document.getElementById('cutoff');
+    const elEmail = document.getElementById('email');
+    const elAnalyze = document.getElementById('analyze');
+    const elStatus = document.getElementById('status');
+    const elResults = document.getElementById('results');
+
+    let extractedText = "";
+
+    const STOPWORDS = new Set([
+      "the","and","or","but","a","an","to","of","in","on","for","with","as","by","at","from","that","this","these","those",
+      "is","are","was","were","be","been","being","it","its","they","their","them","we","our","you","your","i","my","me",
+      "can","could","may","might","will","would","should","must","not","no","yes","than","then","so","such","into","over",
+      "also","more","most","less","least","very","within","between","among","across","each","per","via"
+    ]);
+
+    function setStatus(msg, cls="muted") {
+      elStatus.className = cls;
+      elStatus.textContent = msg;
+    }
+
+    function escapeHtml(s) {
+      return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
+    function normalizeSpaces(s) {
+      return s.replace(/\s+/g, " ").trim();
+    }
+
+    function extractKeywords(context, maxWords=8) {
+      const words = context
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, " ")
+        .split(/\s+/)
+        .filter(w => w.length >= 4 && !STOPWORDS.has(w));
+      // simple frequency
+      const freq = new Map();
+      for (const w of words) freq.set(w, (freq.get(w) || 0) + 1);
+      return [...freq.entries()]
+        .sort((a,b) => b[1]-a[1])
+        .slice(0, maxWords)
+        .map(([w]) => w);
+    }
+
+    function findCitations(text) {
+      // Parenthetical: (Smith, 2010) / (Smith & Jones, 2010) / (Smith et al., 2010)
+      // Narrative: Smith (2010)
+      // NOTE: This is intentionally conservative to reduce false positives.
+      const patterns = [
+        /\(([^()]{1,80}?),\s*(19\d{2}|20\d{2})\)/g,               // (Author, 2010)
+        /\b([A-Z][A-Za-z'’-]{2,})(?:\s+et\s+al\.)?\s*\((19\d{2}|20\d{2})\)/g // Author (2010) / Author et al. (2010)
+      ];
+
+      const matches = [];
+      for (const re of patterns) {
+        re.lastIndex = 0;
+        let m;
+        while ((m = re.exec(text)) !== null) {
+          const full = m[0];
+          const year = Number(m[m.length - 1]);
+          const idx = m.index;
+          matches.push({ full, year, index: idx });
+        }
+      }
+
+      // de-duplicate exact same span text+index
+      const seen = new Set();
+      return matches.filter(x => {
+        const k = x.full + "@" + x.index;
+        if (seen.has(k)) return false;
+        seen.add(k);
+        return true;
+      }).sort((a,b)=>a.index-b.index);
+    }
+
+    function getContext(text, index, radius=220) {
+      const start = Math.max(0, index - radius);
+      const end = Math.min(text.length, index + radius);
+      return normalizeSpaces(text.slice(start, end));
+    }
+
+    async function crossrefSuggest({keywords, cutoffYear, contactEmail, hintAuthor}) {
+      // Crossref query: keep it short; use filter "from-pub-date" to push newer items.
+      const query = keywords.join(" ");
+      const from = `${cutoffYear}-01-01`;
+      const rows = 6;
+
+      const params = new URLSearchParams();
+      params.set("query.bibliographic", query);
+      if (hintAuthor) params.set("query.author", hintAuthor);
+      params.set("rows", String(rows));
+      params.set("sort", "relevance");
+      params.set("order", "desc");
+      params.set("filter", `from-pub-date:${from},type:journal-article`);
+
+      const ua = contactEmail
+        ? `ReferenceFreshnessChecker/1.0 (mailto:${contactEmail})`
+        : `ReferenceFreshnessChecker/1.0`;
+
+      const url = `https://api.crossref.org/works?${params.toString()}`;
+
+      const res = await fetch(url, { headers: { "User-Agent": ua } });
+      if (!res.ok) throw new Error(`Crossref error: ${res.status}`);
+      const data = await res.json();
+      const items = (data?.message?.items || []).slice(0, 5);
+
+      return items.map(it => {
+        const year = it?.issued?.["date-parts"]?.[0]?.[0] ?? null;
+        const title = Array.isArray(it.title) ? it.title[0] : (it.title || "");
+        const journal = Array.isArray(it["container-title"]) ? it["container-title"][0] : (it["container-title"] || "");
+        const doi = it.DOI ? `https://doi.org/${it.DOI}` : "";
+        const authors = Array.isArray(it.author)
+          ? it.author.slice(0,3).map(a => [a.family, a.given].filter(Boolean).join(", ")).join("; ")
+          : "";
+        return { title, year, journal, doi, authors };
+      }).filter(x => x.title);
+    }
+
+    function parseAuthorHint(citationText) {
+      // Try to grab first capitalized surname-ish token.
+      const m = citationText.match(/[A-Z][A-Za-z'’-]{2,}/);
+      return m ? m[0] : "";
+    }
+
+    function renderResults(flagged, cutoff) {
+      if (flagged.length === 0) {
+        elResults.innerHTML = `
+          <div class="card">
+            <span class="pill ok">No flags</span>
+            <p>Nothing older than <strong>${cutoff}</strong> was detected with the current citation patterns.</p>
+          </div>
+        `;
+        return;
+      }
+
+      elResults.innerHTML = `
+        <div class="card">
+          <span class="pill warn">Flagged</span>
+          <strong>${flagged.length}</strong> citation(s) older than <strong>${cutoff}</strong>.
+          <div class="muted">Click each item to see context and suggested newer references.</div>
+        </div>
+        <div class="grid" id="items"></div>
+      `;
+
+      const items = document.getElementById("items");
+      for (const f of flagged) {
+        const div = document.createElement("div");
+        div.className = "result";
+        div.innerHTML = `
+          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <span class="pill warn">Old</span>
+            <div><strong>${escapeHtml(f.full)}</strong> <span class="muted">(${f.year})</span></div>
+          </div>
+          <details style="margin-top:10px;">
+            <summary>Context + suggestions</summary>
+            <div class="muted" style="margin-top:8px;">
+              <div><strong>Context (near citation)</strong></div>
+              <div class="mono" style="white-space: pre-wrap; margin-top:6px;">${escapeHtml(f.context)}</div>
+
+              <div style="margin-top:10px;"><strong>Auto-extracted keywords</strong></div>
+              <div class="mono" style="margin-top:6px;">${escapeHtml(f.keywords.join(" "))}</div>
+
+              <div style="margin-top:10px;"><strong>Suggested newer references (Crossref)</strong></div>
+              <div class="muted" id="sugg-${f.id}">Searching…</div>
+            </div>
+          </details>
+        `;
+        items.appendChild(div);
+      }
+    }
+
+    async function fillSuggestions(flagged, cutoffYear) {
+      for (const f of flagged) {
+        const target = document.getElementById(`sugg-${f.id}`);
+        try {
+          const contactEmail = elEmail.value.trim();
+          const hintAuthor = parseAuthorHint(f.full);
+          const recs = await crossrefSuggest({
+            keywords: f.keywords,
+            cutoffYear,
+            contactEmail,
+            hintAuthor
+          });
+
+          if (!recs.length) {
+            target.innerHTML = `
+              <div class="warn">No strong matches returned.</div>
+              <div class="muted">Try adding a few more domain-specific terms around this spot in your paper.</div>
+            `;
+            continue;
+          }
+
+          target.innerHTML = recs.map(r => {
+            const parts = [];
+            if (r.authors) parts.push(escapeHtml(r.authors));
+            if (r.year) parts.push(String(r.year));
+            if (r.title) parts.push(`<em>${escapeHtml(r.title)}</em>`);
+            if (r.journal) parts.push(escapeHtml(r.journal));
+            const line = parts.filter(Boolean).join(" — ");
+            const link = r.doi ? `<div><a href="${r.doi}" target="_blank" rel="noopener">${escapeHtml(r.doi)}</a></div>` : "";
+            return `<div style="margin:8px 0; padding:8px; border:1px solid rgba(127,127,127,.25); border-radius:10px;">
+              <div>${line}</div>
+              ${link}
+            </div>`;
+          }).join("");
+
+        } catch (err) {
+          target.innerHTML = `<div class="warn">Suggestion lookup failed.</div><div class="mono">${escapeHtml(String(err))}</div>`;
+        }
+      }
+    }
+
+    elDocx.addEventListener('change', async () => {
+      elAnalyze.disabled = true;
+      extractedText = "";
+      elResults.innerHTML = "";
+      if (!elDocx.files?.[0]) return;
+
+      setStatus("Reading DOCX…");
+      try {
+        const arrayBuffer = await elDocx.files[0].arrayBuffer();
+        const result = await mammoth.extractRawText({ arrayBuffer });
+        extractedText = normalizeSpaces(result.value || "");
+        if (!extractedText) throw new Error("No text extracted. Is this a scanned/embedded-image DOCX?");
+        setStatus("DOCX loaded. Ready to analyze.", "muted");
+        elAnalyze.disabled = false;
+      } catch (e) {
+        setStatus("Could not read DOCX. " + (e?.message || String(e)), "warn");
+      }
+    });
+
+    elAnalyze.addEventListener('click', async () => {
+      elResults.innerHTML = "";
+      const cutoff = Number(elCutoff.value);
+      if (!Number.isFinite(cutoff) || cutoff < 1900 || cutoff > 2100) {
+        setStatus("Enter a valid cutoff year.", "warn");
+        return;
+      }
+      if (!extractedText) {
+        setStatus("Upload a DOCX first.", "warn");
+        return;
+      }
+
+      setStatus("Scanning citations…");
+      const citations = findCitations(extractedText);
+
+      const flagged = citations
+        .filter(c => c.year && c.year < cutoff)
+        .map((c, i) => {
+          const context = getContext(extractedText, c.index, 220);
+          const keywords = extractKeywords(context, 9);
+          return { ...c, id: i+1, context, keywords };
+        });
+
+      renderResults(flagged, cutoff);
+
+      if (flagged.length) {
+        setStatus(`Found ${flagged.length} citation(s) older than ${cutoff}. Looking up suggestions…`);
+        await fillSuggestions(flagged, cutoff);
+        setStatus("Done.", "muted");
+      } else {
+        setStatus("Done. No older citations detected.", "muted");
+      }
+    });
+  </script>
+</body>
+</html>
