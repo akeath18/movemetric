@@ -40,7 +40,7 @@
       margin-bottom:18px;
     }
     h1{font-size:18px; margin:0; letter-spacing:.2px}
-    .subtitle{margin:6px 0 0; color:var(--muted); font-size:13px; max-width:72ch}
+    .subtitle{margin:6px 0 0; color:var(--muted); font-size:13px; max-width:76ch}
     .pill{
       display:inline-flex; align-items:center; gap:8px;
       padding:8px 10px; border:1px solid var(--border);
@@ -54,12 +54,10 @@
     .dot.bad{background:var(--bad)}
     .grid{
       display:grid;
-      grid-template-columns: 420px 1fr;
+      grid-template-columns: 440px 1fr;
       gap:16px;
     }
-    @media (max-width: 980px){
-      .grid{grid-template-columns:1fr}
-    }
+    @media (max-width: 980px){ .grid{grid-template-columns:1fr} }
     .card{
       background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.05));
       border:1px solid var(--border);
@@ -78,7 +76,7 @@
     .card .bd{padding:14px 16px}
     .muted{color:var(--muted); font-size:13px}
     .muted2{color:var(--muted2); font-size:12px}
-    label{display:block; font-weight:600; font-size:12px; color:var(--muted); margin:10px 0 6px}
+    label{display:block; font-weight:650; font-size:12px; color:var(--muted); margin:10px 0 6px}
     input[type="number"], input[type="text"], select{
       width:100%;
       padding:10px 12px;
@@ -91,9 +89,7 @@
     input::placeholder{color:rgba(255,255,255,.35)}
     .row{display:grid; grid-template-columns:1fr 1fr; gap:10px}
     .row3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px}
-    @media (max-width: 520px){
-      .row,.row3{grid-template-columns:1fr}
-    }
+    @media (max-width: 520px){ .row,.row3{grid-template-columns:1fr} }
     .btn{
       width:100%;
       padding:11px 12px;
@@ -102,7 +98,7 @@
       background:rgba(96,165,250,.18);
       color:var(--text);
       cursor:pointer;
-      font-weight:650;
+      font-weight:700;
       transition: transform .15s ease, background .15s ease, border-color .15s ease;
     }
     .btn:hover{transform: translateY(-1px); background:rgba(96,165,250,.24); border-color:rgba(96,165,250,.35)}
@@ -123,7 +119,7 @@
       transform: translateY(-1px);
     }
     .drop input{position:absolute; inset:0; opacity:0; cursor:pointer}
-    .drop .big{font-weight:700; font-size:13px}
+    .drop .big{font-weight:800; font-size:13px}
     .drop .small{margin-top:4px; font-size:12px; color:var(--muted)}
     .kpi{
       display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;
@@ -134,7 +130,7 @@
       border:1px solid rgba(255,255,255,.14);
       background:rgba(0,0,0,.16);
     }
-    .kpi .n{font-size:18px; font-weight:800; letter-spacing:.2px}
+    .kpi .n{font-size:18px; font-weight:900; letter-spacing:.2px}
     .kpi .t{font-size:12px; color:var(--muted)}
     .progress{
       height:10px; border-radius:999px;
@@ -150,8 +146,14 @@
       border-radius:999px;
       transition: width .35s ease;
     }
-    .list{
-      display:flex; flex-direction:column; gap:10px;
+    .list{display:flex; flex-direction:column; gap:10px;}
+    .sectionTitle{
+      margin-top:14px;
+      font-weight:900;
+      color:var(--muted);
+      font-size:12px;
+      letter-spacing:.2px;
+      text-transform:uppercase;
     }
     .item{
       border:1px solid rgba(255,255,255,.14);
@@ -173,9 +175,10 @@
     }
     .badge.warn{border-color: rgba(251,191,36,.35); background:rgba(251,191,36,.10); color: rgba(255,255,255,.88)}
     .badge.good{border-color: rgba(52,211,153,.35); background:rgba(52,211,153,.10); color: rgba(255,255,255,.88)}
+    .badge.bad{border-color: rgba(251,113,133,.35); background:rgba(251,113,133,.10); color: rgba(255,255,255,.88)}
     .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace}
     .preview{
-      height: 70vh;
+      height: 72vh;
       overflow:auto;
       padding:16px;
       background: rgba(0,0,0,.22);
@@ -197,11 +200,13 @@
       border-radius:6px;
       border: 1px solid rgba(251,191,36,.28);
     }
-    mark.active{
-      outline: 2px solid rgba(96,165,250,.9);
-      outline-offset: 2px;
+    mark.ref{
       background: rgba(96,165,250,.18);
-      border-color: rgba(96,165,250,.35);
+      border-color: rgba(96,165,250,.30);
+    }
+    mark.active{
+      outline: 2px solid rgba(52,211,153,.9);
+      outline-offset: 2px;
     }
     .skeleton{
       border-radius:14px;
@@ -242,6 +247,15 @@
       cursor:pointer;
     }
     .smallbtn:hover{background: rgba(255,255,255,.10)}
+    .toggles{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px}
+    .toggle{
+      display:flex; align-items:center; gap:8px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.16);
+      padding:8px 10px; border-radius:14px;
+      font-size:12px; color:var(--muted);
+    }
+    .toggle input{accent-color: var(--accent);}
   </style>
 </head>
 <body>
@@ -249,7 +263,9 @@
     <header>
       <div>
         <h1>Reference Freshness Checker</h1>
-        <p class="subtitle">Upload a <span class="mono">.docx</span>, flag in-text citations older than your cutoff year, and get newer candidate references (Crossref with OpenAlex fallback). Includes an interactive preview with highlights.</p>
+        <p class="subtitle">
+          Default parsing is <span class="mono">APA</span>. It flags in-text citations (and reference list entries) older than your cutoff year, highlights them in a preview, and suggests newer candidates (Crossref with OpenAlex fallback).
+        </p>
       </div>
       <div class="pill" id="pill">
         <span class="dot" id="pillDot"></span>
@@ -258,7 +274,7 @@
     </header>
 
     <div class="grid">
-      <!-- Left: Controls + Findings -->
+      <!-- Left -->
       <div class="card">
         <div class="hd">
           <strong>Analyze</strong>
@@ -268,38 +284,54 @@
           <div class="drop" id="drop">
             <input id="docx" type="file" accept=".docx" />
             <div class="big">Drop a DOCX here, or click to upload</div>
-            <div class="small">Processing happens locally. Only short keyword queries are sent to suggestion APIs.</div>
+            <div class="small">DOCX is processed locally. Only short keyword queries go to suggestion APIs.</div>
           </div>
 
           <div class="row" style="margin-top:12px">
             <div>
-              <label for="cutoff">Cutoff year</label>
-              <input id="cutoff" type="number" min="1900" max="2100" value="2018" />
+              <label for="style">Citation style (default APA)</label>
+              <select id="style">
+                <option value="apa" selected>APA</option>
+                <option value="chicago-ad">Chicago (Author–Date)</option>
+                <option value="mla">MLA (limited year detection)</option>
+              </select>
+              <div class="muted2">MLA typically lacks years in-text; this relies more on Works Cited years.</div>
             </div>
             <div>
-              <label for="radius">Context window</label>
-              <input id="radius" type="number" min="80" max="600" value="220" />
-              <div class="muted2">Characters before/after the citation</div>
+              <label for="cutoff">Cutoff year</label>
+              <input id="cutoff" type="number" min="1900" max="2100" value="2018" />
             </div>
           </div>
 
           <div class="row3" style="margin-top:12px">
             <div>
-              <label for="source">Suggestion source</label>
-              <select id="source">
-                <option value="crossref">Crossref (primary)</option>
-                <option value="openalex">OpenAlex (primary)</option>
-                <option value="both" selected>Crossref → OpenAlex (fallback)</option>
-              </select>
+              <label for="radius">Context window</label>
+              <input id="radius" type="number" min="120" max="900" value="320" />
+              <div class="muted2">Chars before/after each match</div>
             </div>
             <div>
               <label for="mailto">Contact email (recommended)</label>
               <input id="mailto" type="text" placeholder="you@university.edu" />
-              <div class="muted2">Used as mailto= (no blocked headers)</div>
+              <div class="muted2">Used as <span class="mono">mailto=</span> (browser-safe)</div>
             </div>
             <div>
-              <label for="maxRecs">Suggestions / citation</label>
+              <label for="maxRecs">Suggestions / flag</label>
               <input id="maxRecs" type="number" min="1" max="10" value="5" />
+            </div>
+          </div>
+
+          <div class="row" style="margin-top:12px">
+            <div>
+              <label for="source">Suggestion source</label>
+              <select id="source">
+                <option value="both" selected>Crossref → OpenAlex (fallback)</option>
+                <option value="crossref">Crossref only</option>
+                <option value="openalex">OpenAlex only</option>
+              </select>
+            </div>
+            <div class="toggles">
+              <label class="toggle"><input id="scanInText" type="checkbox" checked /> Scan in-text</label>
+              <label class="toggle"><input id="scanRefs" type="checkbox" checked /> Scan references/works cited</label>
             </div>
           </div>
 
@@ -315,27 +347,28 @@
 
           <div class="kpi">
             <div class="tile">
-              <div class="n" id="kCites">0</div>
-              <div class="t">Citations found</div>
+              <div class="n" id="kFound">0</div>
+              <div class="t">Flags found</div>
             </div>
             <div class="tile">
-              <div class="n" id="kFlag">0</div>
-              <div class="t">Flagged (older)</div>
+              <div class="n" id="kText">0</div>
+              <div class="t">In-text flags</div>
             </div>
             <div class="tile">
-              <div class="n" id="kSug">0</div>
-              <div class="t">With suggestions</div>
+              <div class="n" id="kRefs">0</div>
+              <div class="t">Reference list flags</div>
             </div>
           </div>
 
-          <div style="margin-top:14px">
-            <div class="muted" style="font-weight:700; margin-bottom:8px">Flagged citations</div>
-            <div id="list" class="list"></div>
-          </div>
+          <div class="sectionTitle">In-text flags</div>
+          <div id="listText" class="list"></div>
+
+          <div class="sectionTitle">Reference list flags</div>
+          <div id="listRefs" class="list"></div>
         </div>
       </div>
 
-      <!-- Right: Preview -->
+      <!-- Right -->
       <div class="card">
         <div class="hd">
           <strong>Document preview</strong>
@@ -345,9 +378,7 @@
           </div>
         </div>
         <div class="preview" id="preview">
-          <div class="paper" id="paper">
-            <span class="muted">No document loaded yet.</span>
-          </div>
+          <div class="paper" id="paper"><span class="muted">No document loaded yet.</span></div>
         </div>
       </div>
     </div>
@@ -355,29 +386,34 @@
 
   <div class="toast" id="toast"></div>
 
-  <!-- DOCX -> raw text -->
   <script src="https://unpkg.com/mammoth@1.6.0/mammoth.browser.min.js"></script>
 
   <script>
+    // --- Elements
     const elDocx = document.getElementById('docx');
     const elDrop = document.getElementById('drop');
+    const elStyle = document.getElementById('style');
     const elCutoff = document.getElementById('cutoff');
     const elRadius = document.getElementById('radius');
     const elMailto = document.getElementById('mailto');
     const elSource = document.getElementById('source');
     const elMaxRecs = document.getElementById('maxRecs');
+    const elScanInText = document.getElementById('scanInText');
+    const elScanRefs = document.getElementById('scanRefs');
+
     const elAnalyze = document.getElementById('analyze');
     const elClear = document.getElementById('clear');
-
     const elBar = document.getElementById('bar');
     const elStatus = document.getElementById('status');
     const elFileName = document.getElementById('fileName');
 
-    const elKCites = document.getElementById('kCites');
-    const elKFlag = document.getElementById('kFlag');
-    const elKSug = document.getElementById('kSug');
+    const elKFound = document.getElementById('kFound');
+    const elKText = document.getElementById('kText');
+    const elKRefs = document.getElementById('kRefs');
 
-    const elList = document.getElementById('list');
+    const elListText = document.getElementById('listText');
+    const elListRefs = document.getElementById('listRefs');
+
     const elPaper = document.getElementById('paper');
     const elPreview = document.getElementById('preview');
 
@@ -388,6 +424,7 @@
     const elScrollTop = document.getElementById('scrollTop');
     const elDownloadReport = document.getElementById('downloadReport');
 
+    // --- State
     const STOPWORDS = new Set([
       "the","and","or","but","a","an","to","of","in","on","for","with","as","by","at","from","that","this","these","those",
       "is","are","was","were","be","been","being","it","its","they","their","them","we","our","you","your","i","my","me",
@@ -395,20 +432,20 @@
       "also","more","most","less","least","very","within","between","among","across","each","per","via"
     ]);
 
-    let extractedText = "";
-    let citations = [];
-    let flagged = [];
+    let docText = "";            // preserved newlines
+    let inTextFlags = [];        // {id, kind:"text", yearNum, yearStr, spanStart, spanEnd, display, context, keywords, suggestions, err, appliedSuggestion}
+    let refFlags = [];           // {id, kind:"ref", yearNum, yearStr, spanStart, spanEnd, display, entry, context, keywords, titleHint, suggestions, err, appliedSuggestion}
     let report = null;
+    let lastActiveId = null;
 
+    // --- UI helpers
     function toast(msg){
       elToast.textContent = msg;
       elToast.classList.add('show');
       clearTimeout(toast._t);
       toast._t = setTimeout(()=>elToast.classList.remove('show'), 2200);
     }
-
     function setPill(state){
-      // idle | loading | analyzing | done | error
       const map = {
         idle:  {dot:"", cls:"", text:"Idle"},
         loading:{dot:"warn", text:"Loading…"},
@@ -420,15 +457,22 @@
       elPillDot.className = "dot" + (s.dot ? (" " + s.dot) : "");
       elPillText.textContent = s.text;
     }
-
     function setStatus(msg){ elStatus.textContent = msg; }
     function setProgress(p){ elBar.style.width = Math.max(0, Math.min(100, p)) + "%"; }
-
-    function normalizeSpaces(s){ return (s || "").replace(/\s+/g, " ").trim(); }
     function escapeHtml(s){ return (s || "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
+    function normalizeDocText(s){
+      // keep newlines; normalize spaces/tabs; limit excessive blank lines
+      return (s || "")
+        .replace(/\r\n?/g, "\n")
+        .replace(/[ \t]+/g, " ")
+        .replace(/\n{3,}/g, "\n\n")
+        .trim();
+    }
+
     function extractKeywords(context, maxWords=10){
-      const words = context.toLowerCase()
+      const words = (context || "")
+        .toLowerCase()
         .replace(/[^a-z0-9\s-]/g, " ")
         .split(/\s+/)
         .filter(w => w.length >= 4 && !STOPWORDS.has(w));
@@ -437,52 +481,260 @@
       return [...freq.entries()].sort((a,b)=>b[1]-a[1]).slice(0, maxWords).map(([w])=>w);
     }
 
-    function findCitations(text){
-      // conservative APA-ish detection
-      const patterns = [
-        /\(([^()]{1,90}?),\s*(19\d{2}|20\d{2})\)/g, // (Author, 2010)
-        /\b([A-Z][A-Za-z'’-]{2,})(?:\s+et\s+al\.)?\s*\((19\d{2}|20\d{2})\)/g // Author (2010)
-      ];
-      const out = [];
-      for(const re of patterns){
-        re.lastIndex = 0;
-        let m;
-        while((m=re.exec(text))!==null){
-          out.push({
-            full:m[0],
-            year:Number(m[m.length-1]),
-            index:m.index
+    function getContextAt(index, radius){
+      const start = Math.max(0, index - radius);
+      const end = Math.min(docText.length, index + radius);
+      return docText.slice(start, end).replace(/\s+/g, " ").trim();
+    }
+
+    function yearToNumber(yearStr){
+      // "2020a" -> 2020
+      const m = String(yearStr || "").match(/(19\d{2}|20\d{2})/);
+      return m ? Number(m[1]) : NaN;
+    }
+
+    // --- Find reference list section
+    function findRefsSection(text){
+      // returns {headingStart, contentStart} or null
+      const re = /(?:^|\n)\s*(references|works cited|bibliography)\s*(?:\n|$)/i;
+      const m = re.exec(text);
+      if(!m) return null;
+      const headingStart = m.index + (m[0].startsWith("\n") ? 1 : 0);
+      const contentStart = m.index + m[0].length;
+      return { headingStart, contentStart, heading: m[1].toLowerCase() };
+    }
+
+    // --- Tight in-text parsing
+    // Strategy: find parenthetical groups and narrative patterns based on style,
+    // then extract *year tokens* with optional suffix letters (e.g., 2020a).
+    function parseInTextFlags(text, style, cutoffYear, radius){
+      const flags = [];
+      const yearToken = /(19\d{2}|20\d{2})([a-z])?/g;
+
+      // Parenthetical groups: allow up to ~300 chars inside to reduce runaway matches
+      const parenRe = /\(([^()]{1,320})\)/g;
+      let pm;
+      while((pm = parenRe.exec(text)) !== null){
+        const inside = pm[1];
+        const groupStart = pm.index;              // position of "("
+        const insideStartAbs = groupStart + 1;    // first char inside parentheses
+
+        // Style guardrails:
+        // - APA often has comma before year; Chicago AD often has space before year; MLA often no year.
+        // We'll still scan for year tokens, but require some author-like token nearby to reduce false positives.
+        if(!/(19\d{2}|20\d{2})/.test(inside)) continue;
+
+        // Split by semicolons to handle multi-citation groups
+        const parts = inside.split(";").map(p => p.trim()).filter(Boolean);
+        let partCursor = 0;
+
+        for(const part of parts){
+          const partIndexRel = inside.indexOf(part, partCursor);
+          partCursor = partIndexRel + part.length;
+
+          // author-ish hint: first capitalized token in part
+          const authorHint = (part.match(/[A-Z][A-Za-z'’\-]{2,}/) || [""])[0];
+
+          // stronger guard: for APA/Chicago, require an author-ish token OR "et al."
+          if(style !== "mla"){
+            if(!authorHint && !/et\s+al\./i.test(part)) continue;
+          }
+
+          yearToken.lastIndex = 0;
+          let ym;
+          while((ym = yearToken.exec(part)) !== null){
+            const yStr = ym[0];           // "2012" or "2012a"
+            const yNum = yearToNumber(yStr);
+            if(!Number.isFinite(yNum)) continue;
+            if(yNum >= cutoffYear) continue;
+
+            // For APA, usually "(Author, 2012)" so try to ensure punctuation structure
+            if(style === "apa"){
+              // accept if comma before year somewhere in part OR "et al." is present
+              const idx = ym.index;
+              const before = part.slice(0, idx);
+              if(!/,\s*$/.test(before) && !/,/.test(before) && !/et\s+al\./i.test(part)){
+                // still allow if authorHint exists and year is later in part
+                if(!authorHint) continue;
+              }
+            }
+
+            // For Chicago AD, accept "(Author 2012, 33)" (space before year)
+            if(style === "chicago-ad"){
+              const idx = ym.index;
+              const before = part.slice(0, idx);
+              if(!/\s$/.test(before) && !/,/.test(before)){
+                // ok but keep conservative; require author
+                if(!authorHint) continue;
+              }
+            }
+
+            const absYearStart = insideStartAbs + partIndexRel + ym.index;
+            const absYearEnd = absYearStart + yStr.length;
+
+            flags.push({
+              kind: "text",
+              yearNum: yNum,
+              yearStr: yStr,
+              spanStart: absYearStart,
+              spanEnd: absYearEnd,
+              display: `(${part})`,
+              authorHint,
+              context: getContextAt(absYearStart, radius),
+              keywords: extractKeywords(getContextAt(absYearStart, radius), 10),
+              suggestions: null,
+              err: null,
+              appliedSuggestion: null
+            });
+          }
+        }
+      }
+
+      // Narrative patterns (APA): "Smith (2012)" / "Smith et al. (2012a)"
+      // Narrative patterns (Chicago AD): same form occurs too; keep for both APA and Chicago-AD.
+      if(style === "apa" || style === "chicago-ad"){
+        const narrRe = /\b([A-Z][A-Za-z'’\-]{2,}(?:\s+(?:&|and)\s+[A-Z][A-Za-z'’\-]{2,})?(?:\s+et\s+al\.)?)\s*\(((?:19\d{2}|20\d{2})[a-z]?)\)/g;
+        let nm;
+        while((nm = narrRe.exec(text)) !== null){
+          const author = nm[1];
+          const yStr = nm[2];
+          const yNum = yearToNumber(yStr);
+          if(!Number.isFinite(yNum) || yNum >= cutoffYear) continue;
+
+          // highlight the year token within the parentheses
+          const fullMatch = nm[0];
+          const idxYearInMatch = fullMatch.lastIndexOf(yStr);
+          const absYearStart = nm.index + idxYearInMatch;
+          const absYearEnd = absYearStart + yStr.length;
+
+          flags.push({
+            kind: "text",
+            yearNum: yNum,
+            yearStr: yStr,
+            spanStart: absYearStart,
+            spanEnd: absYearEnd,
+            display: `${author} (${yStr})`,
+            authorHint: (author.match(/[A-Z][A-Za-z'’\-]{2,}/) || [""])[0],
+            context: getContextAt(absYearStart, radius),
+            keywords: extractKeywords(getContextAt(absYearStart, radius), 10),
+            suggestions: null,
+            err: null,
+            appliedSuggestion: null
           });
         }
       }
+
+      // de-dup by span
       const seen = new Set();
-      return out.filter(x=>{
-        const k = x.full+"@"+x.index;
-        if(seen.has(k)) return false;
+      const out = [];
+      for(const f of flags.sort((a,b)=>a.spanStart-b.spanStart)){
+        const k = `${f.kind}:${f.spanStart}-${f.spanEnd}`;
+        if(seen.has(k)) continue;
         seen.add(k);
-        return true;
-      }).sort((a,b)=>a.index-b.index);
+        out.push(f);
+      }
+      // assign ids
+      out.forEach((f,i)=>f.id = `C${i+1}`);
+      return out;
     }
 
-    function getContext(text, index, radius){
-      const start = Math.max(0, index - radius);
-      const end = Math.min(text.length, index + radius);
-      return normalizeSpaces(text.slice(start, end));
+    // --- Reference list parsing (find entries + year tokens + optional title hint)
+    function parseReferenceFlags(text, cutoffYear, radius){
+      const sec = findRefsSection(text);
+      if(!sec) return { flags: [], section: null };
+
+      const refsStartAbs = sec.contentStart;
+      const refsText = text.slice(refsStartAbs);
+
+      // Build "entries" from lines: group contiguous non-empty lines
+      const lines = refsText.split("\n");
+      const entries = [];
+      let cur = "";
+      let curLineStart = 0;   // line offset in refsText
+      let pos = 0;            // current char offset in refsText
+
+      for(let i=0;i<lines.length;i++){
+        const line = lines[i];
+        const lineStart = pos;
+        pos += line.length + 1; // + \n
+        if(line.trim() === ""){
+          if(cur.trim()){
+            entries.push({ text: cur.trim(), start: curLineStart });
+            cur = "";
+          }
+          continue;
+        }
+        if(!cur){
+          curLineStart = lineStart;
+          cur = line;
+        }else{
+          // many DOCX extracts wrap lines; join with space
+          cur += " " + line.trim();
+        }
+      }
+      if(cur.trim()) entries.push({ text: cur.trim(), start: curLineStart });
+
+      const flags = [];
+      const yearRe = /((?:19\d{2}|20\d{2})[a-z]?)/g;
+
+      for(const e of entries){
+        yearRe.lastIndex = 0;
+        const ym = yearRe.exec(e.text);
+        if(!ym) continue;
+        const yStr = ym[1];
+        const yNum = yearToNumber(yStr);
+        if(!Number.isFinite(yNum) || yNum >= cutoffYear) continue;
+
+        const absYearStart = refsStartAbs + e.start + ym.index;
+        const absYearEnd = absYearStart + yStr.length;
+
+        const authorHint = (e.text.match(/^([A-Z][A-Za-z'’\-]{2,})/) || ["",""])[1] || "";
+        const titleHint = extractTitleHint(e.text);
+
+        flags.push({
+          kind: "ref",
+          yearNum: yNum,
+          yearStr: yStr,
+          spanStart: absYearStart,
+          spanEnd: absYearEnd,
+          display: e.text.slice(0, 140) + (e.text.length > 140 ? "…" : ""),
+          entry: e.text,
+          authorHint,
+          titleHint,
+          context: getContextAt(absYearStart, radius),
+          keywords: extractKeywords((titleHint ? (titleHint + " ") : "") + getContextAt(absYearStart, radius), 10),
+          suggestions: null,
+          err: null,
+          appliedSuggestion: null
+        });
+      }
+
+      flags.sort((a,b)=>a.spanStart-b.spanStart).forEach((f,i)=>f.id = `R${i+1}`);
+      return { flags, section: sec };
     }
 
-    function parseAuthorHint(citationText){
-      const m = (citationText || "").match(/[A-Z][A-Za-z'’-]{2,}/);
-      return m ? m[0] : "";
+    function extractTitleHint(entry){
+      // Heuristic: for APA-ish, title often follows year in parentheses or after year period.
+      // Try a few patterns and return a short title segment if found.
+      // Example APA: "Smith, J. (2012). Title of article. Journal..."
+      // Example Chicago: "Smith, John. 2012. Title. Journal..."
+      const m1 = entry.match(/\)\.\s*([^\.]{6,200})\./); // after ")."
+      if(m1) return m1[1].trim();
+      const m2 = entry.match(/\b(19\d{2}|20\d{2})[a-z]?\.\s*([^\.]{6,200})\./); // after "2012."
+      if(m2) return m2[2].trim();
+      const m3 = entry.match(/\b(19\d{2}|20\d{2})[a-z]?\)\s*([^\.]{6,200})\./); // after "2012)"
+      if(m3) return m3[2].trim();
+      return "";
     }
 
-    // ---- Suggestion APIs (browser-safe) ----
+    // --- Suggestion APIs (browser-safe)
     async function suggestCrossref({keywords, cutoffYear, maxRecs, mailto, hintAuthor}){
       const q = keywords.join(" ");
       const from = `${cutoffYear}-01-01`;
       const params = new URLSearchParams();
       params.set("query.bibliographic", q);
       if(hintAuthor) params.set("query.author", hintAuthor);
-      params.set("rows", String(Math.min(12, maxRecs*2)));
+      params.set("rows", String(Math.min(20, maxRecs*4)));
       params.set("sort","relevance");
       params.set("order","desc");
       params.set("filter", `from-pub-date:${from},type:journal-article`);
@@ -507,11 +759,10 @@
     }
 
     async function suggestOpenAlex({keywords, cutoffYear, maxRecs}){
-      // OpenAlex: CORS-friendly; filter works.year >= cutoff
       const q = keywords.join(" ");
       const params = new URLSearchParams();
       params.set("search", q);
-      params.set("per_page", String(Math.min(25, maxRecs*4)));
+      params.set("per_page", String(Math.min(30, maxRecs*6)));
       params.set("filter", `from_publication_date:${cutoffYear}-01-01,type:article`);
       const url = `https://api.openalex.org/works?${params.toString()}`;
 
@@ -536,8 +787,6 @@
       const mode = elSource.value;
       if(mode === "crossref") return await suggestCrossref(opts);
       if(mode === "openalex") return await suggestOpenAlex(opts);
-
-      // both: Crossref first, fallback
       try{
         const a = await suggestCrossref(opts);
         if(a && a.length) return a;
@@ -545,30 +794,31 @@
       return await suggestOpenAlex(opts);
     }
 
-    // ---- Preview rendering with highlights ----
-    function buildPreviewHtml(text, flaggedList, activeId){
+    function citationLabelFromSuggestion(s){
+      const year = s.year ? String(s.year) : "n.d.";
+      const firstAuthor = (s.authors || "").split(";")[0] || "Author";
+      const last = firstAuthor.split(",")[0].trim() || firstAuthor.split(" ").slice(-1)[0] || "Author";
+      return `${last}, ${year}`;
+    }
+
+    // --- Preview rendering with highlight spans (in-text + references)
+    function buildPreviewHtml(text, highlights, activeId){
       if(!text) return `<span class="muted">No document loaded yet.</span>`;
 
-      // Build mark tags by injecting around exact spans at indexes.
-      // We must insert from end -> start so indexes remain valid.
-      let html = escapeHtml(text);
-      // When using escapeHtml, indexes no longer match; so instead we rebuild using slicing on raw text then escape piecewise.
-      // We'll do proper piecewise assembly:
-      const spans = flaggedList.map(f => ({
-        start: f.index,
-        end: f.index + f.full.length,
-        id: f.id
-      })).sort((a,b)=>a.start-b.start);
+      const spans = highlights
+        .map(h => ({ start:h.spanStart, end:h.spanEnd, id:h.id, kind:h.kind }))
+        .sort((a,b)=>a.start-b.start);
 
-      // Merge overlaps conservatively
+      // merge overlapping spans (rare)
       const merged = [];
       for(const s of spans){
         const last = merged[merged.length-1];
         if(last && s.start <= last.end){
           last.end = Math.max(last.end, s.end);
           last.ids.push(s.id);
+          last.kinds.push(s.kind);
         }else{
-          merged.push({start:s.start, end:s.end, ids:[s.id]});
+          merged.push({ start:s.start, end:s.end, ids:[s.id], kinds:[s.kind] });
         }
       }
 
@@ -577,98 +827,27 @@
       for(const m of merged){
         out.push(escapeHtml(text.slice(cursor, m.start)));
         const raw = text.slice(m.start, m.end);
-        // if merged has multiple ids, mark with the first id for navigation
         const id = m.ids[0];
-        const cls = (id === activeId) ? "active" : "";
-        out.push(`<mark class="${cls}" data-cite="${id}" id="cite-${id}">${escapeHtml(raw)}</mark>`);
+        const kind = m.kinds[0];
+        const cls = [
+          (kind === "ref" ? "ref" : ""),
+          (id === activeId ? "active" : "")
+        ].filter(Boolean).join(" ");
+        out.push(`<mark class="${cls}" data-id="${escapeHtml(id)}" id="hit-${escapeHtml(id)}">${escapeHtml(raw)}</mark>`);
         cursor = m.end;
       }
       out.push(escapeHtml(text.slice(cursor)));
-
-      // Inject applied suggestion badges (preview only)
-      // We'll append small inline notes after mark blocks by replacing mark close tag.
-      // Do it after main assembly.
-      let joined = out.join("");
-      for(const f of flaggedList){
-        if(f.appliedSuggestion){
-          const note = ` <span class="badge good mono" style="vertical-align:middle">Suggested: ${escapeHtml(f.appliedSuggestion)}</span>`;
-          joined = joined.replace(new RegExp(`(<\\/mark>)`, "g"), (match, offset, str) => match); // no-op placeholder
-          // Target specifically cite-id mark
-          joined = joined.replace(
-            new RegExp(`(<mark[^>]*data-cite="${f.id}"[^>]*>[^<]*<\\/mark>)`),
-            `$1${note}`
-          );
-        }
-      }
-
-      return joined;
-    }
-
-    function renderList(){
-      elList.innerHTML = "";
-      if(!flagged.length){
-        elList.innerHTML = `<div class="muted2">No flagged citations yet.</div>`;
-        return;
-      }
-
-      for(const f of flagged){
-        const div = document.createElement("div");
-        div.className = "item fade-in";
-        div.innerHTML = `
-          <div class="top">
-            <div>
-              <div style="font-weight:800; font-size:13px">${escapeHtml(f.full)} <span class="muted2">(${f.year})</span></div>
-              <div class="muted2">#${f.id} • ${escapeHtml(f.keywords.slice(0,7).join(" "))}</div>
-            </div>
-            <span class="badge warn">older than ${escapeHtml(String(f.cutoff))}</span>
-          </div>
-          <div style="margin-top:8px">
-            ${f.suggestions
-              ? `<span class="badge good">${f.suggestions.length} suggestion(s)</span>`
-              : `<span class="badge">pending</span>`
-            }
-            ${f.err ? `<span class="badge" style="border-color:rgba(251,113,133,.35); background:rgba(251,113,133,.10)">lookup failed</span>` : ""}
-          </div>
-          <div style="margin-top:8px" class="muted2 mono">${escapeHtml(f.context)}</div>
-          <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap">
-            <button class="smallbtn" data-action="jump" data-id="${f.id}">Jump</button>
-            <button class="smallbtn" data-action="suggest" data-id="${f.id}">${f.suggestions ? "Re-run suggestions" : "Get suggestions"}</button>
-            <button class="smallbtn" data-action="apply" data-id="${f.id}" ${(!f.suggestions || !f.suggestions.length) ? "disabled" : ""}>Apply top suggestion (preview)</button>
-          </div>
-          ${f.suggestions && f.suggestions.length ? `
-            <div style="margin-top:10px; display:flex; flex-direction:column; gap:8px">
-              ${f.suggestions.map((s, idx) => `
-                <div style="padding:10px; border-radius:14px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04)">
-                  <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start">
-                    <div style="font-weight:800; font-size:13px">${escapeHtml(s.title)}</div>
-                    <span class="badge">${escapeHtml(s.source)}${s.year ? " • "+escapeHtml(String(s.year)) : ""}</span>
-                  </div>
-                  <div class="muted2" style="margin-top:6px">${escapeHtml(s.authors || "")}${(s.journal ? " • " + escapeHtml(s.journal) : "")}</div>
-                  ${s.doi ? `<div style="margin-top:6px"><a href="${escapeHtml(s.doi)}" target="_blank" rel="noopener">${escapeHtml(s.doi)}</a></div>` : ""}
-                  <div style="margin-top:8px">
-                    <button class="smallbtn" data-action="applySpecific" data-id="${f.id}" data-idx="${idx}">Apply this (preview)</button>
-                  </div>
-                </div>
-              `).join("")}
-            </div>
-          ` : (f.suggestions ? `<div class="muted2" style="margin-top:8px">No matches returned. Try increasing context window or use OpenAlex.</div>` : ``)}
-        `;
-        elList.appendChild(div);
-      }
-    }
-
-    function updateKPIs(){
-      elKCites.textContent = String(citations.length);
-      elKFlag.textContent = String(flagged.length);
-      elKSug.textContent = String(flagged.filter(f => f.suggestions && f.suggestions.length).length);
+      return out.join("");
     }
 
     function renderPreview(activeId=null){
-      elPaper.innerHTML = buildPreviewHtml(extractedText, flagged, activeId);
-      // click marks to select
-      elPaper.querySelectorAll("mark[data-cite]").forEach(m=>{
+      lastActiveId = activeId;
+      const highlights = [...inTextFlags, ...refFlags];
+      elPaper.innerHTML = buildPreviewHtml(docText, highlights, activeId);
+
+      elPaper.querySelectorAll("mark[data-id]").forEach(m=>{
         m.addEventListener("click", ()=>{
-          const id = Number(m.getAttribute("data-cite"));
+          const id = m.getAttribute("data-id");
           jumpTo(id);
         });
       });
@@ -676,76 +855,144 @@
 
     function jumpTo(id){
       renderPreview(id);
-      const el = document.getElementById(`cite-${id}`);
+      const el = document.getElementById(`hit-${id}`);
       if(el){
-        // scroll inside preview container
-        const top = el.offsetTop - 80;
+        const top = el.offsetTop - 90;
         elPreview.scrollTo({ top, behavior: "smooth" });
-        toast(`Jumped to citation #${id}`);
+        toast(`Jumped to ${id}`);
       }
     }
 
-    async function runSuggestionsForOne(f){
+    function updateKPIs(){
+      elKText.textContent = String(inTextFlags.length);
+      elKRefs.textContent = String(refFlags.length);
+      elKFound.textContent = String(inTextFlags.length + refFlags.length);
+    }
+
+    // --- Lists
+    function renderLists(){
+      renderListSection(elListText, inTextFlags, "text");
+      renderListSection(elListRefs, refFlags, "ref");
+      updateKPIs();
+    }
+
+    function renderListSection(container, items, kind){
+      container.innerHTML = "";
+      if(!items.length){
+        container.innerHTML = `<div class="muted2">None.</div>`;
+        return;
+      }
+
+      for(const f of items){
+        const hasSug = Array.isArray(f.suggestions);
+        const sugCount = hasSug ? f.suggestions.length : 0;
+
+        const div = document.createElement("div");
+        div.className = "item fade-in";
+        div.innerHTML = `
+          <div class="top">
+            <div>
+              <div style="font-weight:900; font-size:13px">${escapeHtml(f.display)} <span class="muted2">(${escapeHtml(f.yearStr)})</span></div>
+              <div class="muted2 mono">${escapeHtml(f.context || "")}</div>
+            </div>
+            <span class="badge warn">older</span>
+          </div>
+          <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap">
+            <span class="badge">${escapeHtml(f.id)}</span>
+            ${f.err ? `<span class="badge bad">lookup failed</span>` : ""}
+            ${hasSug ? `<span class="badge good">${sugCount} suggestion(s)</span>` : `<span class="badge">pending</span>`}
+          </div>
+
+          <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap">
+            <button class="smallbtn" data-action="jump" data-id="${escapeHtml(f.id)}">Jump</button>
+            <button class="smallbtn" data-action="suggest" data-id="${escapeHtml(f.id)}">${hasSug ? "Re-run suggestions" : "Get suggestions"}</button>
+            <button class="smallbtn" data-action="applyTop" data-id="${escapeHtml(f.id)}" ${(!hasSug || !sugCount) ? "disabled" : ""}>Apply top (preview)</button>
+          </div>
+
+          ${hasSug && sugCount ? `
+            <div style="margin-top:10px; display:flex; flex-direction:column; gap:8px">
+              ${f.suggestions.map((s, idx) => `
+                <div style="padding:10px; border-radius:14px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04)">
+                  <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start">
+                    <div style="font-weight:900; font-size:13px">${escapeHtml(s.title)}</div>
+                    <span class="badge">${escapeHtml(s.source)}${s.year ? " • "+escapeHtml(String(s.year)) : ""}</span>
+                  </div>
+                  <div class="muted2" style="margin-top:6px">${escapeHtml(s.authors || "")}${(s.journal ? " • " + escapeHtml(s.journal) : "")}</div>
+                  ${s.doi ? `<div style="margin-top:6px"><a href="${escapeHtml(s.doi)}" target="_blank" rel="noopener">${escapeHtml(s.doi)}</a></div>` : ""}
+                  <div style="margin-top:8px">
+                    <button class="smallbtn" data-action="applySpecific" data-id="${escapeHtml(f.id)}" data-idx="${idx}">Apply this (preview)</button>
+                  </div>
+                </div>
+              `).join("")}
+            </div>
+          ` : (hasSug ? `<div class="muted2" style="margin-top:8px">No matches returned. Try a larger context window or switch sources.</div>` : ``)}
+        `;
+        container.appendChild(div);
+      }
+    }
+
+    function getFlagById(id){
+      return inTextFlags.find(x=>x.id===id) || refFlags.find(x=>x.id===id) || null;
+    }
+
+    async function runSuggestionsForFlag(f){
       const maxRecs = Number(elMaxRecs.value) || 5;
       const cutoffYear = Number(elCutoff.value);
       const mailto = elMailto.value.trim();
-      const hintAuthor = parseAuthorHint(f.full);
 
+      // Build keywords: context + optional title hint for ref entries
+      const keywords = [...(f.keywords || [])];
+      if(f.kind === "ref" && f.titleHint){
+        const tks = extractKeywords(f.titleHint, 6);
+        for(const t of tks) if(!keywords.includes(t)) keywords.unshift(t);
+      }
+
+      const hintAuthor = f.authorHint || "";
       try{
         f.err = null;
-        const recs = await getSuggestions({
-          keywords: f.keywords,
-          cutoffYear,
-          maxRecs,
-          mailto,
-          hintAuthor
-        });
-        f.suggestions = recs || [];
+        f.suggestions = await getSuggestions({ keywords, cutoffYear, maxRecs, mailto, hintAuthor });
       }catch(e){
         f.suggestions = [];
         f.err = String(e?.message || e);
       }
     }
 
-    function citationLabelFromSuggestion(s){
-      // simple APA-like short label for preview
-      const year = s.year ? String(s.year) : "n.d.";
-      const firstAuthor = (s.authors || "").split(";")[0] || "Author";
-      const last = firstAuthor.split(",")[0].trim() || "Author";
-      return `${last}, ${year}`;
-    }
-
     function applySuggestionToPreview(f, s){
       f.appliedSuggestion = citationLabelFromSuggestion(s);
-      renderPreview(f.id);
-      renderList();
-      toast(`Applied suggestion to preview for #${f.id}`);
+      // Add a lightweight badge next to highlight by injecting into text is messy;
+      // instead we show applied state in the report + list and keep preview highlight.
+      toast(`Applied to ${f.id} (tracked in report)`);
+      renderPreview(lastActiveId);
+      renderLists();
     }
 
     function buildReport(){
       return {
         createdAt: new Date().toISOString(),
+        citationStyle: elStyle.value,
         cutoffYear: Number(elCutoff.value),
         contextRadius: Number(elRadius.value),
+        scanInText: elScanInText.checked,
+        scanRefs: elScanRefs.checked,
         suggestionSource: elSource.value,
         fileName: elFileName.textContent,
         counts: {
-          citationsFound: citations.length,
-          flagged: flagged.length,
-          withSuggestions: flagged.filter(f => f.suggestions && f.suggestions.length).length
+          inTextFlags: inTextFlags.length,
+          refFlags: refFlags.length,
+          totalFlags: inTextFlags.length + refFlags.length
         },
-        flagged: flagged.map(f => ({
-          id: f.id,
-          citation: f.full,
-          year: f.year,
-          index: f.index,
-          keywords: f.keywords,
-          context: f.context,
-          appliedSuggestion: f.appliedSuggestion || null,
-          suggestions: (f.suggestions || []).map(s => ({
-            source: s.source, title: s.title, year: s.year, authors: s.authors, journal: s.journal, doi: s.doi
-          })),
-          error: f.err || null
+        inTextFlags: inTextFlags.map(f => ({
+          id:f.id, year:f.yearStr, yearNum:f.yearNum, display:f.display, span:[f.spanStart,f.spanEnd],
+          keywords:f.keywords, context:f.context, appliedSuggestion:f.appliedSuggestion || null,
+          suggestions:(f.suggestions||[]).map(s=>({source:s.source,title:s.title,year:s.year,authors:s.authors,journal:s.journal,doi:s.doi})),
+          error:f.err||null
+        })),
+        refFlags: refFlags.map(f => ({
+          id:f.id, year:f.yearStr, yearNum:f.yearNum, display:f.display, span:[f.spanStart,f.spanEnd],
+          titleHint:f.titleHint||"", entry:f.entry, keywords:f.keywords, context:f.context,
+          appliedSuggestion:f.appliedSuggestion || null,
+          suggestions:(f.suggestions||[]).map(s=>({source:s.source,title:s.title,year:s.year,authors:s.authors,journal:s.journal,doi:s.doi})),
+          error:f.err||null
         }))
       };
     }
@@ -761,7 +1008,7 @@
       URL.revokeObjectURL(url);
     }
 
-    // ---- File handling ----
+    // --- File load
     async function loadDocx(file){
       setPill("loading");
       setProgress(10);
@@ -770,19 +1017,18 @@
       elClear.disabled = false;
       elDownloadReport.disabled = true;
 
-      citations = [];
-      flagged = [];
+      inTextFlags = [];
+      refFlags = [];
       report = null;
-      updateKPIs();
-      renderList();
+      renderLists();
       elPaper.innerHTML = `<span class="muted">Loading…</span>`;
 
       try{
         const ab = await file.arrayBuffer();
         setProgress(30);
         const result = await mammoth.extractRawText({arrayBuffer: ab});
-        extractedText = normalizeSpaces(result.value || "");
-        if(!extractedText) throw new Error("No text extracted. If this DOCX is mostly images, this tool won’t see the content.");
+        docText = normalizeDocText(result.value || "");
+        if(!docText) throw new Error("No text extracted. If the DOCX is mostly images, this tool won’t see it.");
 
         elFileName.textContent = file.name;
         setProgress(55);
@@ -795,13 +1041,13 @@
       }catch(e){
         setPill("error");
         setStatus("Could not read DOCX: " + (e?.message || String(e)));
-        extractedText = "";
+        docText = "";
         elPaper.innerHTML = `<span class="muted">Failed to load.</span>`;
         setProgress(0);
       }
     }
 
-    // drag/drop styling
+    // drag/drop
     ["dragenter","dragover"].forEach(evt=>{
       elDrop.addEventListener(evt, (e)=>{ e.preventDefault(); e.stopPropagation(); elDrop.classList.add("drag"); });
     });
@@ -818,73 +1064,64 @@
     });
 
     elClear.addEventListener("click", ()=>{
-      extractedText = "";
-      citations = [];
-      flagged = [];
+      docText = "";
+      inTextFlags = [];
+      refFlags = [];
       report = null;
       elFileName.textContent = "No file loaded";
       elAnalyze.disabled = true;
       elClear.disabled = true;
       elDownloadReport.disabled = true;
-      updateKPIs();
+      renderLists();
       setStatus("Upload a DOCX to begin.");
       setPill("idle");
-      renderList();
       elPaper.innerHTML = `<span class="muted">No document loaded yet.</span>`;
       setProgress(0);
     });
 
-    elScrollTop.addEventListener("click", ()=>{
-      elPreview.scrollTo({top:0, behavior:"smooth"});
-    });
-
+    elScrollTop.addEventListener("click", ()=> elPreview.scrollTo({top:0, behavior:"smooth"}) );
     elDownloadReport.addEventListener("click", ()=>{
       if(!report) report = buildReport();
       downloadJson(report);
     });
 
-    // Main analyze
+    // --- Main analyze
     elAnalyze.addEventListener("click", async ()=>{
+      if(!docText){ toast("Upload a DOCX first"); return; }
       const cutoff = Number(elCutoff.value);
       const radius = Number(elRadius.value);
-      if(!extractedText){ toast("Upload a DOCX first"); return; }
+      const style = elStyle.value;
+
       if(!Number.isFinite(cutoff) || cutoff < 1900 || cutoff > 2100){ toast("Enter a valid cutoff year"); return; }
-      if(!Number.isFinite(radius) || radius < 80 || radius > 600){ toast("Context window must be 80–600"); return; }
+      if(!Number.isFinite(radius) || radius < 120 || radius > 900){ toast("Context window must be 120–900"); return; }
 
       setPill("analyzing");
       setProgress(10);
-      setStatus("Scanning citations…");
+      setStatus("Scanning…");
       elAnalyze.disabled = true;
       elDownloadReport.disabled = true;
 
-      citations = findCitations(extractedText);
-      setProgress(25);
+      inTextFlags = [];
+      refFlags = [];
 
-      flagged = citations
-        .filter(c => c.year && c.year < cutoff)
-        .map((c, i) => {
-          const context = getContext(extractedText, c.index, radius);
-          const keywords = extractKeywords(context, 10);
-          return {
-            id: i+1,
-            full: c.full,
-            year: c.year,
-            index: c.index,
-            cutoff,
-            context,
-            keywords,
-            suggestions: null,
-            err: null,
-            appliedSuggestion: null
-          };
-        });
+      // Parse flags
+      setProgress(22);
+      if(elScanInText.checked){
+        setStatus("Scanning in-text citations…");
+        inTextFlags = parseInTextFlags(docText, style, cutoff, radius);
+      }
+      setProgress(40);
+      if(elScanRefs.checked){
+        setStatus("Scanning reference list…");
+        refFlags = parseReferenceFlags(docText, cutoff, radius).flags;
+      }
 
-      updateKPIs();
       renderPreview(null);
-      renderList();
+      renderLists();
 
-      if(!flagged.length){
-        setStatus(`Done. Found ${citations.length} citation(s); none older than ${cutoff}.`);
+      const total = inTextFlags.length + refFlags.length;
+      if(!total){
+        setStatus("Done. No flags found for the current settings.");
         setPill("done");
         setProgress(0);
         elAnalyze.disabled = false;
@@ -893,58 +1130,61 @@
         return;
       }
 
-      setStatus(`Found ${flagged.length} older citation(s). Fetching suggestions…`);
-      setProgress(35);
-
-      // skeleton while loading
-      elList.innerHTML = "";
-      for(let i=0;i<Math.min(flagged.length, 4);i++){
-        const sk = document.createElement("div");
-        sk.className = "skeleton";
-        elList.appendChild(sk);
+      // skeletons while suggesting
+      const skCount = Math.min(3, Math.max(1, total));
+      elListText.innerHTML = "";
+      elListRefs.innerHTML = "";
+      for(let i=0;i<Math.min(skCount, inTextFlags.length || 0);i++){
+        const sk = document.createElement("div"); sk.className="skeleton"; elListText.appendChild(sk);
+      }
+      for(let i=0;i<Math.min(skCount, refFlags.length || 0);i++){
+        const sk = document.createElement("div"); sk.className="skeleton"; elListRefs.appendChild(sk);
       }
 
-      // fetch suggestions sequentially (safer on rate limits)
+      // Suggest sequentially (friendlier to rate limits)
+      const all = [...inTextFlags, ...refFlags];
       let done = 0;
-      for(const f of flagged){
-        await runSuggestionsForOne(f);
+      setProgress(50);
+      for(const f of all){
+        setStatus(`Fetching suggestions… ${done+1}/${all.length}`);
+        await runSuggestionsForFlag(f);
         done++;
-        setProgress(35 + Math.round((done/flagged.length)*55));
-        setStatus(`Fetching suggestions… ${done}/${flagged.length}`);
+        setProgress(50 + Math.round((done/all.length)*45));
       }
 
-      renderList();
-      updateKPIs();
+      renderLists();
       setStatus("Done.");
       setPill("done");
       setProgress(0);
-
       elAnalyze.disabled = false;
+
       report = buildReport();
       elDownloadReport.disabled = false;
     });
 
-    // handle list button clicks
-    elList.addEventListener("click", async (e)=>{
+    // List click handlers
+    function handleListClick(e){
       const btn = e.target.closest("button[data-action]");
       if(!btn) return;
+
       const action = btn.getAttribute("data-action");
-      const id = Number(btn.getAttribute("data-id"));
-      const f = flagged.find(x=>x.id===id);
+      const id = btn.getAttribute("data-id");
+      const f = getFlagById(id);
       if(!f) return;
 
       if(action === "jump"){
         jumpTo(id);
       }
       if(action === "suggest"){
-        btn.disabled = true;
-        toast("Fetching suggestions…");
-        await runSuggestionsForOne(f);
-        renderList();
-        updateKPIs();
-        btn.disabled = false;
+        (async ()=>{
+          btn.disabled = true;
+          toast("Fetching suggestions…");
+          await runSuggestionsForFlag(f);
+          renderLists();
+          btn.disabled = false;
+        })();
       }
-      if(action === "apply"){
+      if(action === "applyTop"){
         if(f.suggestions && f.suggestions.length){
           applySuggestionToPreview(f, f.suggestions[0]);
         }
@@ -954,7 +1194,9 @@
         const s = (f.suggestions || [])[idx];
         if(s) applySuggestionToPreview(f, s);
       }
-    });
+    }
+    elListText.addEventListener("click", handleListClick);
+    elListRefs.addEventListener("click", handleListClick);
 
     // initial state
     setPill("idle");
