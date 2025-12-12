@@ -3,93 +3,390 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Reference Freshness Checker (DOCX)</title>
+  <title>Reference Freshness Checker</title>
   <style>
-    :root { color-scheme: light dark; }
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 24px; line-height: 1.35; }
-    .wrap { max-width: 1000px; margin: 0 auto; }
-    h1 { margin: 0 0 8px; font-size: 20px; }
-    p  { margin: 8px 0; }
-    .card { border: 1px solid rgba(127,127,127,.35); border-radius: 12px; padding: 14px; margin: 14px 0; background: rgba(127,127,127,.06); }
-    label { display:block; font-weight: 600; margin: 10px 0 6px; }
-    input[type="number"], input[type="text"] { width: 220px; padding: 10px; border-radius: 10px; border: 1px solid rgba(127,127,127,.35); }
-    input[type="file"] { padding: 8px 0; }
-    button { padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(127,127,127,.35); cursor: pointer; }
-    button:disabled { opacity: .6; cursor: not-allowed; }
-    .row { display:flex; gap:14px; flex-wrap:wrap; align-items:end; }
-    .muted { opacity: .8; font-size: 13px; }
-    .warn { color: #b45309; }
-    .ok { color: #15803d; }
-    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: 12px; }
-    .result { padding: 10px; border-radius: 10px; border: 1px solid rgba(127,127,127,.25); background: rgba(127,127,127,.04); margin-top: 10px; }
-    .pill { display:inline-block; padding: 2px 8px; border-radius: 999px; border: 1px solid rgba(127,127,127,.35); font-size: 12px; margin-right: 6px; }
-    .grid { display:grid; gap: 10px; }
-    a { word-break: break-word; }
-    details > summary { cursor: pointer; }
+    :root{
+      --bg:#0b1020;
+      --panel:rgba(255,255,255,.06);
+      --panel2:rgba(255,255,255,.09);
+      --border:rgba(255,255,255,.14);
+      --text:rgba(255,255,255,.92);
+      --muted:rgba(255,255,255,.70);
+      --muted2:rgba(255,255,255,.55);
+      --good:#34d399;
+      --warn:#fbbf24;
+      --bad:#fb7185;
+      --accent:#60a5fa;
+      --shadow: 0 20px 60px rgba(0,0,0,.35);
+      --radius: 18px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(900px 500px at 10% 10%, rgba(96,165,250,.24), transparent 60%),
+        radial-gradient(700px 400px at 90% 20%, rgba(52,211,153,.18), transparent 55%),
+        radial-gradient(800px 600px at 50% 100%, rgba(251,191,36,.10), transparent 60%),
+        var(--bg);
+      overflow-x:hidden;
+    }
+    a{color:var(--accent); text-decoration:none}
+    .wrap{max-width:1240px; margin:28px auto; padding:0 18px}
+    header{
+      display:flex; align-items:flex-end; justify-content:space-between; gap:18px;
+      margin-bottom:18px;
+    }
+    h1{font-size:18px; margin:0; letter-spacing:.2px}
+    .subtitle{margin:6px 0 0; color:var(--muted); font-size:13px; max-width:72ch}
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 10px; border:1px solid var(--border);
+      border-radius:999px; background:rgba(255,255,255,.05);
+      font-size:12px; color:var(--muted);
+      box-shadow:0 10px 30px rgba(0,0,0,.18);
+    }
+    .dot{width:8px; height:8px; border-radius:50%; background:var(--muted2)}
+    .dot.good{background:var(--good)}
+    .dot.warn{background:var(--warn)}
+    .dot.bad{background:var(--bad)}
+    .grid{
+      display:grid;
+      grid-template-columns: 420px 1fr;
+      gap:16px;
+    }
+    @media (max-width: 980px){
+      .grid{grid-template-columns:1fr}
+    }
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.05));
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      backdrop-filter: blur(10px);
+    }
+    .card .hd{
+      padding:14px 16px;
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.03);
+    }
+    .card .hd strong{font-size:13px}
+    .card .bd{padding:14px 16px}
+    .muted{color:var(--muted); font-size:13px}
+    .muted2{color:var(--muted2); font-size:12px}
+    label{display:block; font-weight:600; font-size:12px; color:var(--muted); margin:10px 0 6px}
+    input[type="number"], input[type="text"], select{
+      width:100%;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.16);
+      background:rgba(0,0,0,.20);
+      color:var(--text);
+      outline:none;
+    }
+    input::placeholder{color:rgba(255,255,255,.35)}
+    .row{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+    .row3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px}
+    @media (max-width: 520px){
+      .row,.row3{grid-template-columns:1fr}
+    }
+    .btn{
+      width:100%;
+      padding:11px 12px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.16);
+      background:rgba(96,165,250,.18);
+      color:var(--text);
+      cursor:pointer;
+      font-weight:650;
+      transition: transform .15s ease, background .15s ease, border-color .15s ease;
+    }
+    .btn:hover{transform: translateY(-1px); background:rgba(96,165,250,.24); border-color:rgba(96,165,250,.35)}
+    .btn:disabled{opacity:.55; cursor:not-allowed; transform:none}
+    .btn.secondary{background:rgba(255,255,255,.06)}
+    .btn.secondary:hover{background:rgba(255,255,255,.10); border-color:rgba(255,255,255,.22)}
+    .drop{
+      border:1px dashed rgba(255,255,255,.28);
+      border-radius:16px;
+      padding:14px;
+      background:rgba(255,255,255,.04);
+      position:relative;
+      transition: border-color .18s ease, background .18s ease, transform .18s ease;
+    }
+    .drop.drag{
+      border-color: rgba(96,165,250,.65);
+      background: rgba(96,165,250,.10);
+      transform: translateY(-1px);
+    }
+    .drop input{position:absolute; inset:0; opacity:0; cursor:pointer}
+    .drop .big{font-weight:700; font-size:13px}
+    .drop .small{margin-top:4px; font-size:12px; color:var(--muted)}
+    .kpi{
+      display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;
+    }
+    .kpi .tile{
+      flex: 1 1 120px;
+      padding:10px 12px; border-radius:14px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.16);
+    }
+    .kpi .n{font-size:18px; font-weight:800; letter-spacing:.2px}
+    .kpi .t{font-size:12px; color:var(--muted)}
+    .progress{
+      height:10px; border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.18);
+      overflow:hidden;
+      margin-top:10px;
+    }
+    .bar{
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg, rgba(96,165,250,.9), rgba(52,211,153,.85));
+      border-radius:999px;
+      transition: width .35s ease;
+    }
+    .list{
+      display:flex; flex-direction:column; gap:10px;
+    }
+    .item{
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.16);
+      border-radius:14px;
+      padding:10px 12px;
+      cursor:pointer;
+      transition: transform .12s ease, border-color .12s ease, background .12s ease;
+    }
+    .item:hover{transform: translateY(-1px); border-color: rgba(96,165,250,.35); background:rgba(0,0,0,.20)}
+    .item .top{display:flex; justify-content:space-between; gap:10px; align-items:flex-start}
+    .badge{
+      display:inline-flex; align-items:center; gap:6px;
+      padding:2px 8px; border-radius:999px;
+      font-size:11px; border:1px solid rgba(255,255,255,.14);
+      color:var(--muted);
+      background:rgba(255,255,255,.05);
+      white-space:nowrap;
+    }
+    .badge.warn{border-color: rgba(251,191,36,.35); background:rgba(251,191,36,.10); color: rgba(255,255,255,.88)}
+    .badge.good{border-color: rgba(52,211,153,.35); background:rgba(52,211,153,.10); color: rgba(255,255,255,.88)}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace}
+    .preview{
+      height: 70vh;
+      overflow:auto;
+      padding:16px;
+      background: rgba(0,0,0,.22);
+    }
+    .preview .paper{
+      padding:16px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      box-shadow: 0 10px 30px rgba(0,0,0,.20);
+      line-height:1.55;
+      font-size:14px;
+      white-space: pre-wrap;
+    }
+    mark{
+      background: rgba(251,191,36,.22);
+      color: var(--text);
+      padding: 0 2px;
+      border-radius:6px;
+      border: 1px solid rgba(251,191,36,.28);
+    }
+    mark.active{
+      outline: 2px solid rgba(96,165,250,.9);
+      outline-offset: 2px;
+      background: rgba(96,165,250,.18);
+      border-color: rgba(96,165,250,.35);
+    }
+    .skeleton{
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      overflow:hidden;
+      position:relative;
+      height: 94px;
+    }
+    .skeleton::after{
+      content:"";
+      position:absolute; inset:-40% -60%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.10), transparent);
+      transform: rotate(10deg);
+      animation: shimmer 1.1s infinite linear;
+    }
+    @keyframes shimmer { to { transform: translateX(60%) rotate(10deg); } }
+    .fade-in{animation: fadein .22s ease both}
+    @keyframes fadein{from{opacity:0; transform:translateY(4px)} to{opacity:1; transform:none}}
+    .toast{
+      position:fixed; right:16px; bottom:16px;
+      max-width:420px;
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.35);
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+      color: var(--muted);
+      display:none;
+    }
+    .toast.show{display:block; animation: fadein .18s ease both}
+    .smallbtn{
+      padding:8px 10px; border-radius:12px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      cursor:pointer;
+    }
+    .smallbtn:hover{background: rgba(255,255,255,.10)}
   </style>
 </head>
 <body>
   <div class="wrap">
-    <h1>Reference Freshness Checker (DOCX → finds older in-text citations and suggests newer sources)</h1>
-    <p class="muted">
-      Upload a <span class="mono">.docx</span> file, set a cutoff year, and the app will flag in-text citations older than the cutoff
-      (e.g., <span class="mono">(Smith, 2012)</span> or <span class="mono">Smith (2012)</span>). For each flagged spot, it extracts nearby context
-      and queries Crossref for newer candidate references.
-    </p>
+    <header>
+      <div>
+        <h1>Reference Freshness Checker</h1>
+        <p class="subtitle">Upload a <span class="mono">.docx</span>, flag in-text citations older than your cutoff year, and get newer candidate references (Crossref with OpenAlex fallback). Includes an interactive preview with highlights.</p>
+      </div>
+      <div class="pill" id="pill">
+        <span class="dot" id="pillDot"></span>
+        <span id="pillText">Idle</span>
+      </div>
+    </header>
 
-    <div class="card">
-      <div class="row">
-        <div>
-          <label for="docx">Word document (.docx)</label>
-          <input id="docx" type="file" accept=".docx" />
-          <div class="muted">Tip: This uses a client-side DOCX-to-text converter (Mammoth).</div>
+    <div class="grid">
+      <!-- Left: Controls + Findings -->
+      <div class="card">
+        <div class="hd">
+          <strong>Analyze</strong>
+          <span class="muted2" id="fileName">No file loaded</span>
         </div>
-        <div>
-          <label for="cutoff">Cutoff year (flag anything older)</label>
-          <input id="cutoff" type="number" min="1900" max="2100" value="2018" />
-        </div>
-        <div>
-          <label for="email">Crossref contact (recommended)</label>
-          <input id="email" type="text" placeholder="you@university.edu" />
-          <div class="muted">Crossref prefers a contact email in the User-Agent.</div>
-        </div>
-        <div>
-          <button id="analyze" disabled>Analyze</button>
+        <div class="bd">
+          <div class="drop" id="drop">
+            <input id="docx" type="file" accept=".docx" />
+            <div class="big">Drop a DOCX here, or click to upload</div>
+            <div class="small">Processing happens locally. Only short keyword queries are sent to suggestion APIs.</div>
+          </div>
+
+          <div class="row" style="margin-top:12px">
+            <div>
+              <label for="cutoff">Cutoff year</label>
+              <input id="cutoff" type="number" min="1900" max="2100" value="2018" />
+            </div>
+            <div>
+              <label for="radius">Context window</label>
+              <input id="radius" type="number" min="80" max="600" value="220" />
+              <div class="muted2">Characters before/after the citation</div>
+            </div>
+          </div>
+
+          <div class="row3" style="margin-top:12px">
+            <div>
+              <label for="source">Suggestion source</label>
+              <select id="source">
+                <option value="crossref">Crossref (primary)</option>
+                <option value="openalex">OpenAlex (primary)</option>
+                <option value="both" selected>Crossref → OpenAlex (fallback)</option>
+              </select>
+            </div>
+            <div>
+              <label for="mailto">Contact email (recommended)</label>
+              <input id="mailto" type="text" placeholder="you@university.edu" />
+              <div class="muted2">Used as mailto= (no blocked headers)</div>
+            </div>
+            <div>
+              <label for="maxRecs">Suggestions / citation</label>
+              <input id="maxRecs" type="number" min="1" max="10" value="5" />
+            </div>
+          </div>
+
+          <div style="margin-top:12px" class="row">
+            <button class="btn" id="analyze" disabled>Analyze &amp; Suggest</button>
+            <button class="btn secondary" id="clear" disabled>Clear</button>
+          </div>
+
+          <div class="progress" aria-hidden="true">
+            <div class="bar" id="bar"></div>
+          </div>
+          <div class="muted2" id="status" style="margin-top:8px">Upload a DOCX to begin.</div>
+
+          <div class="kpi">
+            <div class="tile">
+              <div class="n" id="kCites">0</div>
+              <div class="t">Citations found</div>
+            </div>
+            <div class="tile">
+              <div class="n" id="kFlag">0</div>
+              <div class="t">Flagged (older)</div>
+            </div>
+            <div class="tile">
+              <div class="n" id="kSug">0</div>
+              <div class="t">With suggestions</div>
+            </div>
+          </div>
+
+          <div style="margin-top:14px">
+            <div class="muted" style="font-weight:700; margin-bottom:8px">Flagged citations</div>
+            <div id="list" class="list"></div>
+          </div>
         </div>
       </div>
-      <p class="muted">
-        Privacy note: The DOCX is processed locally in your browser. Only small keyword queries (not your full paper) are sent to Crossref to retrieve suggested references.
-      </p>
+
+      <!-- Right: Preview -->
+      <div class="card">
+        <div class="hd">
+          <strong>Document preview</strong>
+          <div style="display:flex; gap:8px">
+            <button class="smallbtn" id="scrollTop" title="Scroll to top">Top</button>
+            <button class="smallbtn" id="downloadReport" title="Download JSON report" disabled>Report</button>
+          </div>
+        </div>
+        <div class="preview" id="preview">
+          <div class="paper" id="paper">
+            <span class="muted">No document loaded yet.</span>
+          </div>
+        </div>
+      </div>
     </div>
-
-    <div id="status" class="muted"></div>
-    <div id="results"></div>
-
-    <details class="card">
-      <summary><strong>What counts as a “citation” here?</strong> (click)</summary>
-      <div class="muted" style="margin-top:10px">
-        This demo looks for common APA-style in-text years:
-        <ul>
-          <li>Parenthetical: <span class="mono">(Author, 2010)</span>, <span class="mono">(Author &amp; Author, 2010)</span>, <span class="mono">(Author et al., 2010)</span></li>
-          <li>Narrative: <span class="mono">Author (2010)</span></li>
-        </ul>
-        It won’t perfectly parse every style or complex citation cluster. You can expand it if you need MLA/Chicago or multiple years.
-      </div>
-    </details>
   </div>
 
-  <!-- Mammoth: DOCX -> HTML/text -->
+  <div class="toast" id="toast"></div>
+
+  <!-- DOCX -> raw text -->
   <script src="https://unpkg.com/mammoth@1.6.0/mammoth.browser.min.js"></script>
 
   <script>
     const elDocx = document.getElementById('docx');
+    const elDrop = document.getElementById('drop');
     const elCutoff = document.getElementById('cutoff');
-    const elEmail = document.getElementById('email');
+    const elRadius = document.getElementById('radius');
+    const elMailto = document.getElementById('mailto');
+    const elSource = document.getElementById('source');
+    const elMaxRecs = document.getElementById('maxRecs');
     const elAnalyze = document.getElementById('analyze');
-    const elStatus = document.getElementById('status');
-    const elResults = document.getElementById('results');
+    const elClear = document.getElementById('clear');
 
-    let extractedText = "";
+    const elBar = document.getElementById('bar');
+    const elStatus = document.getElementById('status');
+    const elFileName = document.getElementById('fileName');
+
+    const elKCites = document.getElementById('kCites');
+    const elKFlag = document.getElementById('kFlag');
+    const elKSug = document.getElementById('kSug');
+
+    const elList = document.getElementById('list');
+    const elPaper = document.getElementById('paper');
+    const elPreview = document.getElementById('preview');
+
+    const elPillDot = document.getElementById('pillDot');
+    const elPillText = document.getElementById('pillText');
+
+    const elToast = document.getElementById('toast');
+    const elScrollTop = document.getElementById('scrollTop');
+    const elDownloadReport = document.getElementById('downloadReport');
 
     const STOPWORDS = new Set([
       "the","and","or","but","a","an","to","of","in","on","for","with","as","by","at","from","that","this","these","those",
@@ -98,97 +395,106 @@
       "also","more","most","less","least","very","within","between","among","across","each","per","via"
     ]);
 
-    function setStatus(msg, cls="muted") {
-      elStatus.className = cls;
-      elStatus.textContent = msg;
+    let extractedText = "";
+    let citations = [];
+    let flagged = [];
+    let report = null;
+
+    function toast(msg){
+      elToast.textContent = msg;
+      elToast.classList.add('show');
+      clearTimeout(toast._t);
+      toast._t = setTimeout(()=>elToast.classList.remove('show'), 2200);
     }
 
-    function escapeHtml(s) {
-      return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    function setPill(state){
+      // idle | loading | analyzing | done | error
+      const map = {
+        idle:  {dot:"", cls:"", text:"Idle"},
+        loading:{dot:"warn", text:"Loading…"},
+        analyzing:{dot:"warn", text:"Analyzing…"},
+        done:{dot:"good", text:"Done"},
+        error:{dot:"bad", text:"Error"}
+      };
+      const s = map[state] || map.idle;
+      elPillDot.className = "dot" + (s.dot ? (" " + s.dot) : "");
+      elPillText.textContent = s.text;
     }
 
-    function normalizeSpaces(s) {
-      return s.replace(/\s+/g, " ").trim();
-    }
+    function setStatus(msg){ elStatus.textContent = msg; }
+    function setProgress(p){ elBar.style.width = Math.max(0, Math.min(100, p)) + "%"; }
 
-    function extractKeywords(context, maxWords=8) {
-      const words = context
-        .toLowerCase()
+    function normalizeSpaces(s){ return (s || "").replace(/\s+/g, " ").trim(); }
+    function escapeHtml(s){ return (s || "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+    function extractKeywords(context, maxWords=10){
+      const words = context.toLowerCase()
         .replace(/[^a-z0-9\s-]/g, " ")
         .split(/\s+/)
         .filter(w => w.length >= 4 && !STOPWORDS.has(w));
-      // simple frequency
       const freq = new Map();
-      for (const w of words) freq.set(w, (freq.get(w) || 0) + 1);
-      return [...freq.entries()]
-        .sort((a,b) => b[1]-a[1])
-        .slice(0, maxWords)
-        .map(([w]) => w);
+      for(const w of words) freq.set(w, (freq.get(w)||0)+1);
+      return [...freq.entries()].sort((a,b)=>b[1]-a[1]).slice(0, maxWords).map(([w])=>w);
     }
 
-    function findCitations(text) {
-      // Parenthetical: (Smith, 2010) / (Smith & Jones, 2010) / (Smith et al., 2010)
-      // Narrative: Smith (2010)
-      // NOTE: This is intentionally conservative to reduce false positives.
+    function findCitations(text){
+      // conservative APA-ish detection
       const patterns = [
-        /\(([^()]{1,80}?),\s*(19\d{2}|20\d{2})\)/g,               // (Author, 2010)
-        /\b([A-Z][A-Za-z'’-]{2,})(?:\s+et\s+al\.)?\s*\((19\d{2}|20\d{2})\)/g // Author (2010) / Author et al. (2010)
+        /\(([^()]{1,90}?),\s*(19\d{2}|20\d{2})\)/g, // (Author, 2010)
+        /\b([A-Z][A-Za-z'’-]{2,})(?:\s+et\s+al\.)?\s*\((19\d{2}|20\d{2})\)/g // Author (2010)
       ];
-
-      const matches = [];
-      for (const re of patterns) {
+      const out = [];
+      for(const re of patterns){
         re.lastIndex = 0;
         let m;
-        while ((m = re.exec(text)) !== null) {
-          const full = m[0];
-          const year = Number(m[m.length - 1]);
-          const idx = m.index;
-          matches.push({ full, year, index: idx });
+        while((m=re.exec(text))!==null){
+          out.push({
+            full:m[0],
+            year:Number(m[m.length-1]),
+            index:m.index
+          });
         }
       }
-
-      // de-duplicate exact same span text+index
       const seen = new Set();
-      return matches.filter(x => {
-        const k = x.full + "@" + x.index;
-        if (seen.has(k)) return false;
+      return out.filter(x=>{
+        const k = x.full+"@"+x.index;
+        if(seen.has(k)) return false;
         seen.add(k);
         return true;
       }).sort((a,b)=>a.index-b.index);
     }
 
-    function getContext(text, index, radius=220) {
+    function getContext(text, index, radius){
       const start = Math.max(0, index - radius);
       const end = Math.min(text.length, index + radius);
       return normalizeSpaces(text.slice(start, end));
     }
 
-    async function crossrefSuggest({keywords, cutoffYear, contactEmail, hintAuthor}) {
-      // Crossref query: keep it short; use filter "from-pub-date" to push newer items.
-      const query = keywords.join(" ");
+    function parseAuthorHint(citationText){
+      const m = (citationText || "").match(/[A-Z][A-Za-z'’-]{2,}/);
+      return m ? m[0] : "";
+    }
+
+    // ---- Suggestion APIs (browser-safe) ----
+    async function suggestCrossref({keywords, cutoffYear, maxRecs, mailto, hintAuthor}){
+      const q = keywords.join(" ");
       const from = `${cutoffYear}-01-01`;
-      const rows = 6;
-
       const params = new URLSearchParams();
-      params.set("query.bibliographic", query);
-      if (hintAuthor) params.set("query.author", hintAuthor);
-      params.set("rows", String(rows));
-      params.set("sort", "relevance");
-      params.set("order", "desc");
+      params.set("query.bibliographic", q);
+      if(hintAuthor) params.set("query.author", hintAuthor);
+      params.set("rows", String(Math.min(12, maxRecs*2)));
+      params.set("sort","relevance");
+      params.set("order","desc");
       params.set("filter", `from-pub-date:${from},type:journal-article`);
-
-      const ua = contactEmail
-        ? `ReferenceFreshnessChecker/1.0 (mailto:${contactEmail})`
-        : `ReferenceFreshnessChecker/1.0`;
+      if(mailto) params.set("mailto", mailto);
 
       const url = `https://api.crossref.org/works?${params.toString()}`;
-
-      const res = await fetch(url, { headers: { "User-Agent": ua } });
-      if (!res.ok) throw new Error(`Crossref error: ${res.status}`);
+      const res = await fetch(url);
+      if(!res.ok) throw new Error(`Crossref ${res.status}`);
       const data = await res.json();
-      const items = (data?.message?.items || []).slice(0, 5);
+      const items = (data?.message?.items || []).slice(0, maxRecs);
 
-      return items.map(it => {
+      return items.map(it=>{
         const year = it?.issued?.["date-parts"]?.[0]?.[0] ?? null;
         const title = Array.isArray(it.title) ? it.title[0] : (it.title || "");
         const journal = Array.isArray(it["container-title"]) ? it["container-title"][0] : (it["container-title"] || "");
@@ -196,156 +502,462 @@
         const authors = Array.isArray(it.author)
           ? it.author.slice(0,3).map(a => [a.family, a.given].filter(Boolean).join(", ")).join("; ")
           : "";
-        return { title, year, journal, doi, authors };
-      }).filter(x => x.title);
+        return { title, year, journal, doi, authors, source:"Crossref" };
+      }).filter(r=>r.title);
     }
 
-    function parseAuthorHint(citationText) {
-      // Try to grab first capitalized surname-ish token.
-      const m = citationText.match(/[A-Z][A-Za-z'’-]{2,}/);
-      return m ? m[0] : "";
+    async function suggestOpenAlex({keywords, cutoffYear, maxRecs}){
+      // OpenAlex: CORS-friendly; filter works.year >= cutoff
+      const q = keywords.join(" ");
+      const params = new URLSearchParams();
+      params.set("search", q);
+      params.set("per_page", String(Math.min(25, maxRecs*4)));
+      params.set("filter", `from_publication_date:${cutoffYear}-01-01,type:article`);
+      const url = `https://api.openalex.org/works?${params.toString()}`;
+
+      const res = await fetch(url);
+      if(!res.ok) throw new Error(`OpenAlex ${res.status}`);
+      const data = await res.json();
+      const items = (data?.results || []).slice(0, maxRecs);
+
+      return items.map(it=>{
+        const year = it?.publication_year ?? null;
+        const title = it?.title || "";
+        const journal = it?.primary_location?.source?.display_name || "";
+        const doi = it?.doi ? (it.doi.startsWith("http") ? it.doi : `https://doi.org/${it.doi.replace(/^doi:/,"")}`) : "";
+        const authors = Array.isArray(it?.authorships)
+          ? it.authorships.slice(0,3).map(a => a?.author?.display_name).filter(Boolean).join("; ")
+          : "";
+        return { title, year, journal, doi, authors, source:"OpenAlex" };
+      }).filter(r=>r.title);
     }
 
-    function renderResults(flagged, cutoff) {
-      if (flagged.length === 0) {
-        elResults.innerHTML = `
-          <div class="card">
-            <span class="pill ok">No flags</span>
-            <p>Nothing older than <strong>${cutoff}</strong> was detected with the current citation patterns.</p>
-          </div>
-        `;
-        return;
-      }
+    async function getSuggestions(opts){
+      const mode = elSource.value;
+      if(mode === "crossref") return await suggestCrossref(opts);
+      if(mode === "openalex") return await suggestOpenAlex(opts);
 
-      elResults.innerHTML = `
-        <div class="card">
-          <span class="pill warn">Flagged</span>
-          <strong>${flagged.length}</strong> citation(s) older than <strong>${cutoff}</strong>.
-          <div class="muted">Click each item to see context and suggested newer references.</div>
-        </div>
-        <div class="grid" id="items"></div>
-      `;
-
-      const items = document.getElementById("items");
-      for (const f of flagged) {
-        const div = document.createElement("div");
-        div.className = "result";
-        div.innerHTML = `
-          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-            <span class="pill warn">Old</span>
-            <div><strong>${escapeHtml(f.full)}</strong> <span class="muted">(${f.year})</span></div>
-          </div>
-          <details style="margin-top:10px;">
-            <summary>Context + suggestions</summary>
-            <div class="muted" style="margin-top:8px;">
-              <div><strong>Context (near citation)</strong></div>
-              <div class="mono" style="white-space: pre-wrap; margin-top:6px;">${escapeHtml(f.context)}</div>
-
-              <div style="margin-top:10px;"><strong>Auto-extracted keywords</strong></div>
-              <div class="mono" style="margin-top:6px;">${escapeHtml(f.keywords.join(" "))}</div>
-
-              <div style="margin-top:10px;"><strong>Suggested newer references (Crossref)</strong></div>
-              <div class="muted" id="sugg-${f.id}">Searching…</div>
-            </div>
-          </details>
-        `;
-        items.appendChild(div);
-      }
+      // both: Crossref first, fallback
+      try{
+        const a = await suggestCrossref(opts);
+        if(a && a.length) return a;
+      }catch(e){}
+      return await suggestOpenAlex(opts);
     }
 
-    async function fillSuggestions(flagged, cutoffYear) {
-      for (const f of flagged) {
-        const target = document.getElementById(`sugg-${f.id}`);
-        try {
-          const contactEmail = elEmail.value.trim();
-          const hintAuthor = parseAuthorHint(f.full);
-          const recs = await crossrefSuggest({
-            keywords: f.keywords,
-            cutoffYear,
-            contactEmail,
-            hintAuthor
-          });
+    // ---- Preview rendering with highlights ----
+    function buildPreviewHtml(text, flaggedList, activeId){
+      if(!text) return `<span class="muted">No document loaded yet.</span>`;
 
-          if (!recs.length) {
-            target.innerHTML = `
-              <div class="warn">No strong matches returned.</div>
-              <div class="muted">Try adding a few more domain-specific terms around this spot in your paper.</div>
-            `;
-            continue;
-          }
+      // Build mark tags by injecting around exact spans at indexes.
+      // We must insert from end -> start so indexes remain valid.
+      let html = escapeHtml(text);
+      // When using escapeHtml, indexes no longer match; so instead we rebuild using slicing on raw text then escape piecewise.
+      // We'll do proper piecewise assembly:
+      const spans = flaggedList.map(f => ({
+        start: f.index,
+        end: f.index + f.full.length,
+        id: f.id
+      })).sort((a,b)=>a.start-b.start);
 
-          target.innerHTML = recs.map(r => {
-            const parts = [];
-            if (r.authors) parts.push(escapeHtml(r.authors));
-            if (r.year) parts.push(String(r.year));
-            if (r.title) parts.push(`<em>${escapeHtml(r.title)}</em>`);
-            if (r.journal) parts.push(escapeHtml(r.journal));
-            const line = parts.filter(Boolean).join(" — ");
-            const link = r.doi ? `<div><a href="${r.doi}" target="_blank" rel="noopener">${escapeHtml(r.doi)}</a></div>` : "";
-            return `<div style="margin:8px 0; padding:8px; border:1px solid rgba(127,127,127,.25); border-radius:10px;">
-              <div>${line}</div>
-              ${link}
-            </div>`;
-          }).join("");
-
-        } catch (err) {
-          target.innerHTML = `<div class="warn">Suggestion lookup failed.</div><div class="mono">${escapeHtml(String(err))}</div>`;
+      // Merge overlaps conservatively
+      const merged = [];
+      for(const s of spans){
+        const last = merged[merged.length-1];
+        if(last && s.start <= last.end){
+          last.end = Math.max(last.end, s.end);
+          last.ids.push(s.id);
+        }else{
+          merged.push({start:s.start, end:s.end, ids:[s.id]});
         }
       }
+
+      let out = [];
+      let cursor = 0;
+      for(const m of merged){
+        out.push(escapeHtml(text.slice(cursor, m.start)));
+        const raw = text.slice(m.start, m.end);
+        // if merged has multiple ids, mark with the first id for navigation
+        const id = m.ids[0];
+        const cls = (id === activeId) ? "active" : "";
+        out.push(`<mark class="${cls}" data-cite="${id}" id="cite-${id}">${escapeHtml(raw)}</mark>`);
+        cursor = m.end;
+      }
+      out.push(escapeHtml(text.slice(cursor)));
+
+      // Inject applied suggestion badges (preview only)
+      // We'll append small inline notes after mark blocks by replacing mark close tag.
+      // Do it after main assembly.
+      let joined = out.join("");
+      for(const f of flaggedList){
+        if(f.appliedSuggestion){
+          const note = ` <span class="badge good mono" style="vertical-align:middle">Suggested: ${escapeHtml(f.appliedSuggestion)}</span>`;
+          joined = joined.replace(new RegExp(`(<\\/mark>)`, "g"), (match, offset, str) => match); // no-op placeholder
+          // Target specifically cite-id mark
+          joined = joined.replace(
+            new RegExp(`(<mark[^>]*data-cite="${f.id}"[^>]*>[^<]*<\\/mark>)`),
+            `$1${note}`
+          );
+        }
+      }
+
+      return joined;
     }
 
-    elDocx.addEventListener('change', async () => {
-      elAnalyze.disabled = true;
-      extractedText = "";
-      elResults.innerHTML = "";
-      if (!elDocx.files?.[0]) return;
-
-      setStatus("Reading DOCX…");
-      try {
-        const arrayBuffer = await elDocx.files[0].arrayBuffer();
-        const result = await mammoth.extractRawText({ arrayBuffer });
-        extractedText = normalizeSpaces(result.value || "");
-        if (!extractedText) throw new Error("No text extracted. Is this a scanned/embedded-image DOCX?");
-        setStatus("DOCX loaded. Ready to analyze.", "muted");
-        elAnalyze.disabled = false;
-      } catch (e) {
-        setStatus("Could not read DOCX. " + (e?.message || String(e)), "warn");
+    function renderList(){
+      elList.innerHTML = "";
+      if(!flagged.length){
+        elList.innerHTML = `<div class="muted2">No flagged citations yet.</div>`;
+        return;
       }
+
+      for(const f of flagged){
+        const div = document.createElement("div");
+        div.className = "item fade-in";
+        div.innerHTML = `
+          <div class="top">
+            <div>
+              <div style="font-weight:800; font-size:13px">${escapeHtml(f.full)} <span class="muted2">(${f.year})</span></div>
+              <div class="muted2">#${f.id} • ${escapeHtml(f.keywords.slice(0,7).join(" "))}</div>
+            </div>
+            <span class="badge warn">older than ${escapeHtml(String(f.cutoff))}</span>
+          </div>
+          <div style="margin-top:8px">
+            ${f.suggestions
+              ? `<span class="badge good">${f.suggestions.length} suggestion(s)</span>`
+              : `<span class="badge">pending</span>`
+            }
+            ${f.err ? `<span class="badge" style="border-color:rgba(251,113,133,.35); background:rgba(251,113,133,.10)">lookup failed</span>` : ""}
+          </div>
+          <div style="margin-top:8px" class="muted2 mono">${escapeHtml(f.context)}</div>
+          <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap">
+            <button class="smallbtn" data-action="jump" data-id="${f.id}">Jump</button>
+            <button class="smallbtn" data-action="suggest" data-id="${f.id}">${f.suggestions ? "Re-run suggestions" : "Get suggestions"}</button>
+            <button class="smallbtn" data-action="apply" data-id="${f.id}" ${(!f.suggestions || !f.suggestions.length) ? "disabled" : ""}>Apply top suggestion (preview)</button>
+          </div>
+          ${f.suggestions && f.suggestions.length ? `
+            <div style="margin-top:10px; display:flex; flex-direction:column; gap:8px">
+              ${f.suggestions.map((s, idx) => `
+                <div style="padding:10px; border-radius:14px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04)">
+                  <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start">
+                    <div style="font-weight:800; font-size:13px">${escapeHtml(s.title)}</div>
+                    <span class="badge">${escapeHtml(s.source)}${s.year ? " • "+escapeHtml(String(s.year)) : ""}</span>
+                  </div>
+                  <div class="muted2" style="margin-top:6px">${escapeHtml(s.authors || "")}${(s.journal ? " • " + escapeHtml(s.journal) : "")}</div>
+                  ${s.doi ? `<div style="margin-top:6px"><a href="${escapeHtml(s.doi)}" target="_blank" rel="noopener">${escapeHtml(s.doi)}</a></div>` : ""}
+                  <div style="margin-top:8px">
+                    <button class="smallbtn" data-action="applySpecific" data-id="${f.id}" data-idx="${idx}">Apply this (preview)</button>
+                  </div>
+                </div>
+              `).join("")}
+            </div>
+          ` : (f.suggestions ? `<div class="muted2" style="margin-top:8px">No matches returned. Try increasing context window or use OpenAlex.</div>` : ``)}
+        `;
+        elList.appendChild(div);
+      }
+    }
+
+    function updateKPIs(){
+      elKCites.textContent = String(citations.length);
+      elKFlag.textContent = String(flagged.length);
+      elKSug.textContent = String(flagged.filter(f => f.suggestions && f.suggestions.length).length);
+    }
+
+    function renderPreview(activeId=null){
+      elPaper.innerHTML = buildPreviewHtml(extractedText, flagged, activeId);
+      // click marks to select
+      elPaper.querySelectorAll("mark[data-cite]").forEach(m=>{
+        m.addEventListener("click", ()=>{
+          const id = Number(m.getAttribute("data-cite"));
+          jumpTo(id);
+        });
+      });
+    }
+
+    function jumpTo(id){
+      renderPreview(id);
+      const el = document.getElementById(`cite-${id}`);
+      if(el){
+        // scroll inside preview container
+        const top = el.offsetTop - 80;
+        elPreview.scrollTo({ top, behavior: "smooth" });
+        toast(`Jumped to citation #${id}`);
+      }
+    }
+
+    async function runSuggestionsForOne(f){
+      const maxRecs = Number(elMaxRecs.value) || 5;
+      const cutoffYear = Number(elCutoff.value);
+      const mailto = elMailto.value.trim();
+      const hintAuthor = parseAuthorHint(f.full);
+
+      try{
+        f.err = null;
+        const recs = await getSuggestions({
+          keywords: f.keywords,
+          cutoffYear,
+          maxRecs,
+          mailto,
+          hintAuthor
+        });
+        f.suggestions = recs || [];
+      }catch(e){
+        f.suggestions = [];
+        f.err = String(e?.message || e);
+      }
+    }
+
+    function citationLabelFromSuggestion(s){
+      // simple APA-like short label for preview
+      const year = s.year ? String(s.year) : "n.d.";
+      const firstAuthor = (s.authors || "").split(";")[0] || "Author";
+      const last = firstAuthor.split(",")[0].trim() || "Author";
+      return `${last}, ${year}`;
+    }
+
+    function applySuggestionToPreview(f, s){
+      f.appliedSuggestion = citationLabelFromSuggestion(s);
+      renderPreview(f.id);
+      renderList();
+      toast(`Applied suggestion to preview for #${f.id}`);
+    }
+
+    function buildReport(){
+      return {
+        createdAt: new Date().toISOString(),
+        cutoffYear: Number(elCutoff.value),
+        contextRadius: Number(elRadius.value),
+        suggestionSource: elSource.value,
+        fileName: elFileName.textContent,
+        counts: {
+          citationsFound: citations.length,
+          flagged: flagged.length,
+          withSuggestions: flagged.filter(f => f.suggestions && f.suggestions.length).length
+        },
+        flagged: flagged.map(f => ({
+          id: f.id,
+          citation: f.full,
+          year: f.year,
+          index: f.index,
+          keywords: f.keywords,
+          context: f.context,
+          appliedSuggestion: f.appliedSuggestion || null,
+          suggestions: (f.suggestions || []).map(s => ({
+            source: s.source, title: s.title, year: s.year, authors: s.authors, journal: s.journal, doi: s.doi
+          })),
+          error: f.err || null
+        }))
+      };
+    }
+
+    function downloadJson(obj, filename="ref-freshness-report.json"){
+      const blob = new Blob([JSON.stringify(obj, null, 2)], {type:"application/json"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    // ---- File handling ----
+    async function loadDocx(file){
+      setPill("loading");
+      setProgress(10);
+      setStatus("Reading DOCX…");
+      elAnalyze.disabled = true;
+      elClear.disabled = false;
+      elDownloadReport.disabled = true;
+
+      citations = [];
+      flagged = [];
+      report = null;
+      updateKPIs();
+      renderList();
+      elPaper.innerHTML = `<span class="muted">Loading…</span>`;
+
+      try{
+        const ab = await file.arrayBuffer();
+        setProgress(30);
+        const result = await mammoth.extractRawText({arrayBuffer: ab});
+        extractedText = normalizeSpaces(result.value || "");
+        if(!extractedText) throw new Error("No text extracted. If this DOCX is mostly images, this tool won’t see the content.");
+
+        elFileName.textContent = file.name;
+        setProgress(55);
+        setStatus("Loaded. Ready to analyze.");
+        elAnalyze.disabled = false;
+        renderPreview(null);
+        setPill("done");
+        setProgress(0);
+        toast("DOCX loaded");
+      }catch(e){
+        setPill("error");
+        setStatus("Could not read DOCX: " + (e?.message || String(e)));
+        extractedText = "";
+        elPaper.innerHTML = `<span class="muted">Failed to load.</span>`;
+        setProgress(0);
+      }
+    }
+
+    // drag/drop styling
+    ["dragenter","dragover"].forEach(evt=>{
+      elDrop.addEventListener(evt, (e)=>{ e.preventDefault(); e.stopPropagation(); elDrop.classList.add("drag"); });
+    });
+    ["dragleave","drop"].forEach(evt=>{
+      elDrop.addEventListener(evt, (e)=>{ e.preventDefault(); e.stopPropagation(); elDrop.classList.remove("drag"); });
+    });
+    elDrop.addEventListener("drop", (e)=>{
+      const f = e.dataTransfer.files && e.dataTransfer.files[0];
+      if(f) loadDocx(f);
+    });
+    elDocx.addEventListener("change", ()=>{
+      const f = elDocx.files && elDocx.files[0];
+      if(f) loadDocx(f);
     });
 
-    elAnalyze.addEventListener('click', async () => {
-      elResults.innerHTML = "";
+    elClear.addEventListener("click", ()=>{
+      extractedText = "";
+      citations = [];
+      flagged = [];
+      report = null;
+      elFileName.textContent = "No file loaded";
+      elAnalyze.disabled = true;
+      elClear.disabled = true;
+      elDownloadReport.disabled = true;
+      updateKPIs();
+      setStatus("Upload a DOCX to begin.");
+      setPill("idle");
+      renderList();
+      elPaper.innerHTML = `<span class="muted">No document loaded yet.</span>`;
+      setProgress(0);
+    });
+
+    elScrollTop.addEventListener("click", ()=>{
+      elPreview.scrollTo({top:0, behavior:"smooth"});
+    });
+
+    elDownloadReport.addEventListener("click", ()=>{
+      if(!report) report = buildReport();
+      downloadJson(report);
+    });
+
+    // Main analyze
+    elAnalyze.addEventListener("click", async ()=>{
       const cutoff = Number(elCutoff.value);
-      if (!Number.isFinite(cutoff) || cutoff < 1900 || cutoff > 2100) {
-        setStatus("Enter a valid cutoff year.", "warn");
-        return;
-      }
-      if (!extractedText) {
-        setStatus("Upload a DOCX first.", "warn");
-        return;
-      }
+      const radius = Number(elRadius.value);
+      if(!extractedText){ toast("Upload a DOCX first"); return; }
+      if(!Number.isFinite(cutoff) || cutoff < 1900 || cutoff > 2100){ toast("Enter a valid cutoff year"); return; }
+      if(!Number.isFinite(radius) || radius < 80 || radius > 600){ toast("Context window must be 80–600"); return; }
 
+      setPill("analyzing");
+      setProgress(10);
       setStatus("Scanning citations…");
-      const citations = findCitations(extractedText);
+      elAnalyze.disabled = true;
+      elDownloadReport.disabled = true;
 
-      const flagged = citations
+      citations = findCitations(extractedText);
+      setProgress(25);
+
+      flagged = citations
         .filter(c => c.year && c.year < cutoff)
         .map((c, i) => {
-          const context = getContext(extractedText, c.index, 220);
-          const keywords = extractKeywords(context, 9);
-          return { ...c, id: i+1, context, keywords };
+          const context = getContext(extractedText, c.index, radius);
+          const keywords = extractKeywords(context, 10);
+          return {
+            id: i+1,
+            full: c.full,
+            year: c.year,
+            index: c.index,
+            cutoff,
+            context,
+            keywords,
+            suggestions: null,
+            err: null,
+            appliedSuggestion: null
+          };
         });
 
-      renderResults(flagged, cutoff);
+      updateKPIs();
+      renderPreview(null);
+      renderList();
 
-      if (flagged.length) {
-        setStatus(`Found ${flagged.length} citation(s) older than ${cutoff}. Looking up suggestions…`);
-        await fillSuggestions(flagged, cutoff);
-        setStatus("Done.", "muted");
-      } else {
-        setStatus("Done. No older citations detected.", "muted");
+      if(!flagged.length){
+        setStatus(`Done. Found ${citations.length} citation(s); none older than ${cutoff}.`);
+        setPill("done");
+        setProgress(0);
+        elAnalyze.disabled = false;
+        report = buildReport();
+        elDownloadReport.disabled = false;
+        return;
+      }
+
+      setStatus(`Found ${flagged.length} older citation(s). Fetching suggestions…`);
+      setProgress(35);
+
+      // skeleton while loading
+      elList.innerHTML = "";
+      for(let i=0;i<Math.min(flagged.length, 4);i++){
+        const sk = document.createElement("div");
+        sk.className = "skeleton";
+        elList.appendChild(sk);
+      }
+
+      // fetch suggestions sequentially (safer on rate limits)
+      let done = 0;
+      for(const f of flagged){
+        await runSuggestionsForOne(f);
+        done++;
+        setProgress(35 + Math.round((done/flagged.length)*55));
+        setStatus(`Fetching suggestions… ${done}/${flagged.length}`);
+      }
+
+      renderList();
+      updateKPIs();
+      setStatus("Done.");
+      setPill("done");
+      setProgress(0);
+
+      elAnalyze.disabled = false;
+      report = buildReport();
+      elDownloadReport.disabled = false;
+    });
+
+    // handle list button clicks
+    elList.addEventListener("click", async (e)=>{
+      const btn = e.target.closest("button[data-action]");
+      if(!btn) return;
+      const action = btn.getAttribute("data-action");
+      const id = Number(btn.getAttribute("data-id"));
+      const f = flagged.find(x=>x.id===id);
+      if(!f) return;
+
+      if(action === "jump"){
+        jumpTo(id);
+      }
+      if(action === "suggest"){
+        btn.disabled = true;
+        toast("Fetching suggestions…");
+        await runSuggestionsForOne(f);
+        renderList();
+        updateKPIs();
+        btn.disabled = false;
+      }
+      if(action === "apply"){
+        if(f.suggestions && f.suggestions.length){
+          applySuggestionToPreview(f, f.suggestions[0]);
+        }
+      }
+      if(action === "applySpecific"){
+        const idx = Number(btn.getAttribute("data-idx"));
+        const s = (f.suggestions || [])[idx];
+        if(s) applySuggestionToPreview(f, s);
       }
     });
+
+    // initial state
+    setPill("idle");
   </script>
 </body>
 </html>
