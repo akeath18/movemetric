@@ -205,7 +205,7 @@
   #suite{padding:80px 5%}
   .suite-header{text-align:center;max-width:600px;margin:0 auto 60px}
   .suite-header p{margin-top:1rem}
-  .suite-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem}
+  .suite-cards{display:grid;grid-template-columns:repeat(5,1fr);gap:1.5rem}
   .suite-card{
     background:var(--card);border:1px solid var(--border);
     border-radius:var(--radius);padding:32px 28px;
@@ -227,7 +227,7 @@
     color:var(--accent);background:rgba(255,255,255,0.05);
     padding:4px 10px;border-radius:99px;
   }
-  @media(max-width:900px){.suite-cards{grid-template-columns:repeat(2,1fr)}}@media(max-width:500px){.suite-cards{grid-template-columns:1fr}}
+  @media(max-width:1100px){.suite-cards{grid-template-columns:repeat(3,1fr)}}@media(max-width:700px){.suite-cards{grid-template-columns:repeat(2,1fr)}}@media(max-width:500px){.suite-cards{grid-template-columns:1fr}}
 
   /* App deep-dive */
   .app-section{padding:100px 5%}
@@ -595,7 +595,7 @@ function App() {
 
   const navLinks = [
     ['Suite','#suite'],['Apps','#apps'],['FitAI','#fitai'],
-    ['For Schools','#for-schools'],['FieldTracker','field-tracker.html'],['Pricing','#pricing'],['Contact','#contact']
+    ['For Schools','#for-schools'],['FieldTracker','field-tracker.html'],['PracticeSphere','practicesphere.html'],['Pricing','#pricing'],['Contact','#contact']
   ];
 
   return (
@@ -683,15 +683,23 @@ function App() {
               tag:'Field Experience',
               accent:'#8B5CF6',
             },
+            {
+              icon:null,
+              name:'PracticeSphere',
+              desc:'Plan practices, manage rosters, track attendance, and monitor athlete progress — all in one place for coaches and PE programs.',
+              tag:'Practice Planning',
+              accent:'#0EA5E9',
+            },
           ].map(({icon,name,desc,tag,accent:a})=>(
             <div className="suite-card" key={name} style={{'--accent':a,'--accent-dim':`${a}20`}}>
-              <div className="suite-card-icon" style={{display:'flex',alignItems:'center',justifyContent:'center',background:name==='FieldTracker'?'rgba(139,92,246,0.12)':'transparent'}}>
-                {icon ? <img src={icon} alt={name} style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:name==='FitAI'?'50%':'0'}}/> : <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="6" y="3" width="16" height="22" rx="2.5" stroke="#8B5CF6" strokeWidth="1.8"/><path d="M10 3v2a2 2 0 002 2h4a2 2 0 002-2V3" stroke="#8B5CF6" strokeWidth="1.8" strokeLinecap="round"/><path d="M10 13h8M10 17h5" stroke="#8B5CF6" strokeWidth="1.8" strokeLinecap="round"/><path d="M10 9.5l1.5 1.5 3-3" stroke="#8B5CF6" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+              <div className="suite-card-icon" style={{display:'flex',alignItems:'center',justifyContent:'center',background:name==='FieldTracker'?'rgba(139,92,246,0.12)':name==='PracticeSphere'?'rgba(14,165,233,0.12)':'transparent'}}>
+                {icon ? <img src={icon} alt={name} style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:name==='FitAI'?'50%':'0'}}/> : name==='PracticeSphere' ? <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="10" stroke="#0EA5E9" strokeWidth="1.8"/><path d="M14 8v6l3.5 3.5" stroke="#0EA5E9" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/><path d="M8 14h2M18 14h2M14 8V6M14 20v2" stroke="#0EA5E9" strokeWidth="1.8" strokeLinecap="round"/></svg> : <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="6" y="3" width="16" height="22" rx="2.5" stroke="#8B5CF6" strokeWidth="1.8"/><path d="M10 3v2a2 2 0 002 2h4a2 2 0 002-2V3" stroke="#8B5CF6" strokeWidth="1.8" strokeLinecap="round"/><path d="M10 13h8M10 17h5" stroke="#8B5CF6" strokeWidth="1.8" strokeLinecap="round"/><path d="M10 9.5l1.5 1.5 3-3" stroke="#8B5CF6" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>}
               </div>
               <h3>{name}</h3>
               <p style={{fontSize:'0.9rem'}}>{desc}</p>
               <span className="tag">{tag}</span>
               {name==='FieldTracker' && <a href="field-tracker.html" style={{display:'inline-flex',alignItems:'center',gap:6,marginTop:12,fontSize:'0.8rem',fontWeight:700,color:'#8B5CF6'}}>Learn more →</a>}
+              {name==='PracticeSphere' && <a href="practicesphere.html" style={{display:'inline-flex',alignItems:'center',gap:6,marginTop:12,fontSize:'0.8rem',fontWeight:700,color:'#0EA5E9'}}>Learn more →</a>}
             </div>
           ))}
         </div>
