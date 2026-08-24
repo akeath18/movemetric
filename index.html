@@ -657,49 +657,65 @@ function App() {
           {[
             {
               icon:window.IMG_CM,
+              iconBg:'transparent',
+              iconRound:false,
               name:'ClassMetrics',
               desc:'Run standardized fitness tests, log results fast, and export clear reports for students, parents, and admins.',
               tag:'Fitness Assessment',
               accent:'var(--green)',
+              link:null,
             },
             {
               icon:window.IMG_CMHR,
+              iconBg:'transparent',
+              iconRound:false,
               name:'ClassMetrics HR',
               desc:'Stream live heart-rate data from student devices and monitor time in activity zones in real time.',
               tag:'Heart-Rate Monitoring',
               accent:'var(--teal)',
+              link:null,
             },
             {
               icon:window.IMG_FITAI,
+              iconBg:'transparent',
+              iconRound:true,
               name:'FitAI',
               desc:'Smart, AI-guided wellness coaching for teachers, students, and families. Set goals, track progress, build habits.',
               tag:'Wellness Coaching',
               accent:'var(--orange)',
+              link:null,
             },
             {
               icon:null,
+              iconBg:'rgba(139,92,246,0.12)',
+              iconRound:false,
+              iconEl:<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="6" y="3" width="16" height="22" rx="2.5" stroke="#8B5CF6" strokeWidth="1.8"/><path d="M10 3v2a2 2 0 002 2h4a2 2 0 002-2V3" stroke="#8B5CF6" strokeWidth="1.8" strokeLinecap="round"/><path d="M10 13h8M10 17h5" stroke="#8B5CF6" strokeWidth="1.8" strokeLinecap="round"/><path d="M10 9.5l1.5 1.5 3-3" stroke="#8B5CF6" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>,
               name:'FieldTracker',
               desc:'Manage student teacher placements, field hour logs, and supervisor sign-offs — built for PE teacher education programs.',
               tag:'Field Experience',
               accent:'#8B5CF6',
+              link:'field-tracker.html',
             },
             {
               icon:null,
+              iconBg:'rgba(14,165,233,0.12)',
+              iconRound:false,
+              iconEl:<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="10" stroke="#0EA5E9" strokeWidth="1.8"/><path d="M14 8v6l3.5 3.5" stroke="#0EA5E9" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/><path d="M8 14h2M18 14h2M14 8V6M14 20v2" stroke="#0EA5E9" strokeWidth="1.8" strokeLinecap="round"/></svg>,
               name:'PracticeSphere',
               desc:'Plan practices, manage rosters, track attendance, and monitor athlete progress — all in one place for coaches and PE programs.',
               tag:'Practice Planning',
               accent:'#0EA5E9',
+              link:'practicesphere.html',
             },
-          ].map(({icon,name,desc,tag,accent:a})=>(
+          ].map(({icon,iconBg,iconRound,iconEl,name,desc,tag,accent:a,link})=>(
             <div className="suite-card" key={name} style={{'--accent':a,'--accent-dim':`${a}20`}}>
-              <div className="suite-card-icon" style={{display:'flex',alignItems:'center',justifyContent:'center',background:name==='FieldTracker'?'rgba(139,92,246,0.12)':name==='PracticeSphere'?'rgba(14,165,233,0.12)':'transparent'}}>
-                {icon ? <img src={icon} alt={name} style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:name==='FitAI'?'50%':'0'}}/> : name==='PracticeSphere' ? <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="10" stroke="#0EA5E9" strokeWidth="1.8"/><path d="M14 8v6l3.5 3.5" stroke="#0EA5E9" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/><path d="M8 14h2M18 14h2M14 8V6M14 20v2" stroke="#0EA5E9" strokeWidth="1.8" strokeLinecap="round"/></svg> : <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="6" y="3" width="16" height="22" rx="2.5" stroke="#8B5CF6" strokeWidth="1.8"/><path d="M10 3v2a2 2 0 002 2h4a2 2 0 002-2V3" stroke="#8B5CF6" strokeWidth="1.8" strokeLinecap="round"/><path d="M10 13h8M10 17h5" stroke="#8B5CF6" strokeWidth="1.8" strokeLinecap="round"/><path d="M10 9.5l1.5 1.5 3-3" stroke="#8B5CF6" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+              <div className="suite-card-icon" style={{display:'flex',alignItems:'center',justifyContent:'center',background:iconBg}}>
+                {icon ? <img src={icon} alt={name} style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:iconRound?'50%':'0'}}/> : iconEl}
               </div>
               <h3>{name}</h3>
               <p style={{fontSize:'0.9rem'}}>{desc}</p>
               <span className="tag">{tag}</span>
-              {name==='FieldTracker' && <a href="field-tracker.html" style={{display:'inline-flex',alignItems:'center',gap:6,marginTop:12,fontSize:'0.8rem',fontWeight:700,color:'#8B5CF6'}}>Learn more →</a>}
-              {name==='PracticeSphere' && <a href="practicesphere.html" style={{display:'inline-flex',alignItems:'center',gap:6,marginTop:12,fontSize:'0.8rem',fontWeight:700,color:'#0EA5E9'}}>Learn more →</a>}
+              {link && <a href={link} style={{display:'inline-flex',alignItems:'center',gap:6,marginTop:12,fontSize:'0.8rem',fontWeight:700,color:a}}>Learn more →</a>}
             </div>
           ))}
         </div>
