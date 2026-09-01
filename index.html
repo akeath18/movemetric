@@ -595,7 +595,7 @@ function App() {
 
   const navLinks = [
     ['Suite','#suite'],['Apps','#apps'],['FitAI','#fitai'],
-    ['For Schools','#for-schools'],['FieldTracker','field-tracker.html'],['PracticeSphere','practicesphere.html'],['Pricing','#pricing'],['Contact','#contact']
+    ['For Schools','#for-schools'],['FieldTracker','field-tracker.html'],['PracticeSphere','practicesphere.html'],['Science Simulator','science-simulator.html'],['Pricing','#pricing'],['Contact','#contact']
   ];
 
   return (
@@ -706,6 +706,17 @@ function App() {
               tag:'Practice Planning',
               accent:'#0EA5E9',
               link:'practicesphere.html',
+            },
+            {
+              icon:null,
+              iconBg:'rgba(45,212,191,0.12)',
+              iconRound:false,
+              iconEl:<svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M9 4h10M11 4v6.5L5.8 20a2.7 2.7 0 002.4 4h11.6a2.7 2.7 0 002.4-4L17 10.5V4" stroke="#14B8A6" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/><path d="M8.2 18h11.6M11 15.5l2 1.5 3-3" stroke="#14B8A6" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+              name:'Science Teaching Simulator',
+              desc:'Rehearse science lessons aloud in a responsive virtual classroom with AI-generated student questions, reactions, and classroom-management moments.',
+              tag:'Teacher Rehearsal',
+              accent:'#14B8A6',
+              link:'science-simulator.html',
             },
           ].map(({icon,iconBg,iconRound,iconEl,name,desc,tag,accent:a,link})=>(
             <div className="suite-card" key={name} style={{'--accent':a,'--accent-dim':`${a}20`}}>
