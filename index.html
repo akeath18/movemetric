@@ -595,7 +595,7 @@ function App() {
 
   const navLinks = [
     ['Suite','#suite'],['Apps','#apps'],['FitAI','#fitai'],
-    ['For Schools','#for-schools'],['FieldTracker','field-tracker.html'],['PracticeSphere','practicesphere.html'],['Science Simulator','science-simulator.html'],['Pricing','#pricing'],['Contact','#contact']
+    ['For Schools','#for-schools'],['FieldTracker','field-tracker.html'],['PracticeSphere','practicesphere.html'],['Science Simulator','science-simulator.html'],['PETE 345','PETE345/'],['Pricing','#pricing'],['Contact','#contact']
   ];
 
   return (
@@ -637,7 +637,7 @@ function App() {
                 <img src={window.IMG_CM} alt="ClassMetrics"/>
                 <img src={window.IMG_FITAI} alt="FitAI" style={{borderRadius:'50%',background:'#0B1628'}}/>
               </div>
-              <p><strong style={{color:'var(--white)'}}>3 apps. One suite.</strong>K–12 PE, heart-rate monitoring, and AI wellness.</p>
+              <p><strong style={{color:'var(--white)'}}>7 tools. One suite.</strong>Assessment, monitoring, coaching, and teacher learning.</p>
             </div>
           </div>
           <div className="hero-visual fade-up delay-2">
@@ -651,7 +651,7 @@ function App() {
         <div className="suite-header">
           <div className="section-label">The Suite</div>
           <h2>Everything your PE program needs.</h2>
-          <p>Three focused apps that work together — from fitness testing to real-time heart-rate data to school-wide wellness coaching.</p>
+          <p>A growing collection of focused tools — from fitness testing and real-time heart-rate data to professional learning and teaching practice.</p>
         </div>
         <div className="suite-cards">
           {[
@@ -717,6 +717,17 @@ function App() {
               tag:'Teacher Rehearsal',
               accent:'#14B8A6',
               link:'science-simulator.html',
+            },
+            {
+              icon:null,
+              iconBg:'rgba(34,197,94,0.12)',
+              iconRound:false,
+              iconEl:<div style={{width:38,height:38,borderRadius:'50%',border:'2px solid #22C55E',display:'grid',placeItems:'center',color:'#22C55E',fontSize:11,fontWeight:800}}>345</div>,
+              name:'PETE 345 Learning Lab',
+              desc:'A public, self-paced kinesiology course with diagnostic routing, applied labs, and competency-based module gates.',
+              tag:'Professional Learning',
+              accent:'#22C55E',
+              link:'PETE345/',
             },
           ].map(({icon,iconBg,iconRound,iconEl,name,desc,tag,accent:a,link})=>(
             <div className="suite-card" key={name} style={{'--accent':a,'--accent-dim':`${a}20`}}>
