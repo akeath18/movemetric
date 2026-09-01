@@ -1,6 +1,7 @@
 (function () {
   const DATA = window.PETE345_DATA;
   const STORAGE_KEY = "movemetric-pete345-course-v1";
+  const COURSE_VERSION = 2;
   const app = document.getElementById("app");
 
   const blank = () => ({
@@ -11,16 +12,28 @@
     pretestAnswers: {},
     confidence: {},
     modules: {},
+    version: COURSE_VERSION,
     startedAt: null,
     lastVisit: null
   });
 
   let state = load();
+  if (state.version !== COURSE_VERSION) {
+    state = Object.assign(blank(), {
+      studentName: state.studentName || "",
+      pretestStarted: !!state.pretestStarted,
+      pretestFinished: !!state.pretestFinished,
+      pretestIndex: state.pretestIndex || 0,
+      pretestAnswers: state.pretestAnswers || {},
+      confidence: state.confidence || {},
+      startedAt: state.startedAt || null
+    });
+  }
 
   function load() {
     try {
       const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-      return saved ? Object.assign(blank(), saved) : blank();
+      return saved ? Object.assign(blank(), saved, { version: saved.version || 1 }) : blank();
     } catch (_) {
       return blank();
     }
@@ -36,8 +49,17 @@
   }
 
   function moduleState(id) {
-    if (!state.modules[id]) state.modules[id] = { lessons: {}, labs: {}, gate: { answers: {}, attempts: 0, submitted: false, score: 0, passed: false } };
+    if (!state.modules[id]) state.modules[id] = { lessons: {}, labs: {}, gate: { answers: {}, attempts: 0, submitted: false, score: 0, passed: false, form: [], lastForm: [], remediationRequired: false, requiredLessons: [] } };
+    const gate = state.modules[id].gate;
+    Object.assign(gate, { form: gate.form || [], lastForm: gate.lastForm || [], requiredLessons: gate.requiredLessons || [] });
     return state.modules[id];
+  }
+
+  function lessonRecord(moduleId, index) {
+    const ms = moduleState(moduleId);
+    const current = ms.lessons[index];
+    if (!current || current === true) ms.lessons[index] = { answers: {}, explanation: "", done: false };
+    return ms.lessons[index];
   }
 
   function scores() {
@@ -60,8 +82,7 @@
   }
 
   function lessonComplete(module) {
-    const ms = moduleState(module.id);
-    return module.lessons.every((_, index) => ms.lessons[index]);
+    return module.lessons.every((_, index) => lessonRecord(module.id, index).done);
   }
 
   function labsComplete(module) {
@@ -70,6 +91,11 @@
   }
 
   function gateOpen(module) {
+    const ms = moduleState(module.id);
+    if (ms.gate.remediationRequired) {
+      const reviewed = ms.gate.requiredLessons.every(index => lessonRecord(module.id, index).done);
+      return reviewed && labsComplete(module);
+    }
     return prescription(module.id).key === "accelerated" || (lessonComplete(module) && labsComplete(module));
   }
 
@@ -113,7 +139,7 @@
               <button class="button primary" data-go="${primary.hash}">${primary.label}<span>→</span></button>
               <a class="button ghost" href="#course-map">Explore the modules</a>
             </div>
-            <div class="hero-facts"><div><strong>10</strong><span>learning modules</span></div><div><strong>16</strong><span>guided lectures</span></div><div><strong>80%</strong><span>mastery threshold</span></div></div>
+            <div class="hero-facts"><div><strong>10</strong><span>learning modules</span></div><div><strong>16</strong><span>taught segments</span></div><div><strong>80%</strong><span>mastery threshold</span></div></div>
           </div>
           <div class="hero-system" aria-label="Course reasoning system">
             <div class="system-label">Your reasoning loop</div>
@@ -127,8 +153,8 @@
           <div class="orientation-steps">
             <article><span>01</span><h3>Diagnose</h3><p>Thirty applied questions map your current knowledge across every course module.</p></article>
             <article><span>02</span><h3>Prescribe</h3><p>Each module becomes full study, targeted review, or a direct competency-gate attempt.</p></article>
-            <article><span>03</span><h3>Practice</h3><p>Short lectures, teaching cases, and hands-on labs turn terminology into professional decisions.</p></article>
-            <article><span>04</span><h3>Demonstrate</h3><p>Score at least 80% on every module gate. Review and retry whenever evidence says you need it.</p></article>
+            <article><span>03</span><h3>Learn + practice</h3><p>Explicit explanations, worked examples, retrieval checks, self-explanations, and evidence-producing labs teach every assessed concept.</p></article>
+            <article><span>04</span><h3>Demonstrate</h3><p>Score at least 80% on every gate. An unsuccessful attempt prescribes corrective study and then generates five different questions.</p></article>
           </div>
         </section>
 
@@ -139,11 +165,12 @@
             ${DATA.modules.map(module => `<article class="module-tile phase-${module.phase.toLowerCase()}">
               <div class="tile-top"><span>Module ${String(module.id).padStart(2,"0")}</span><i>${module.weeks}</i></div>
               <h3>${esc(module.title)}</h3><p>${esc(module.purpose)}</p>
-              <div class="tile-foot"><span>${module.lessons.length} lecture${module.lessons.length > 1 ? "s" : ""} · ${module.labs.length} lab${module.labs.length > 1 ? "s" : ""}</span><button data-module="${module.id}" aria-label="Open ${esc(module.title)}">↗</button></div>
+              <div class="tile-foot"><span>${module.lessons.length} learning segment${module.lessons.length > 1 ? "s" : ""} · ${module.labs.length} evidence lab${module.labs.length > 1 ? "s" : ""}</span><button data-module="${module.id}" aria-label="Open ${esc(module.title)}">↗</button></div>
             </article>`).join("")}
           </div>
         </section>
 
+        <section class="learning-design"><div><span class="section-label">How learning is built</span><h2>Study less passively. Retrieve, explain, test, and revise.</h2><p>The course uses learner-paced segmentation, explicit teaching, worked examples, self-explanation, distributed retrieval, corrective feedback, and mastery learning.</p></div><ol>${DATA.learningDesign.principles.map((item,index)=>`<li><b>0${index+1}</b><span>${esc(item)}</span></li>`).join("")}</ol><div class="research-links">${DATA.learningDesign.sources.map(source=>`<a href="${source.url}" target="_blank" rel="noopener">${esc(source.label)} ↗</a>`).join("")}</div></section>
         <section class="privacy-strip"><div><span>Public course · no login required</span><h2>Your work stays with you.</h2></div><p>Progress is saved in this browser on this device. Use the printable learning report to share results with your instructor.</p></section>
       </main>${footer()}`;
   }
@@ -213,12 +240,12 @@
     });
     return `${header("path")}
       <main class="dashboard-page">
-        <section class="dashboard-head"><div><span class="section-label">Personal learning path</span><h1>${state.studentName ? `Welcome back, ${esc(state.studentName)}.` : "Your course dashboard."}</h1><p>Complete the prescribed work, submit evidence from each lab, and earn 80% or better on every competency gate.</p></div><div class="mastery-total"><strong>${complete}<small>/10</small></strong><span>modules mastered</span><i><b style="width:${complete * 10}%"></b></i></div></section>
+        <section class="dashboard-head"><div><span class="section-label">Personal learning path</span><h1>${state.studentName ? `Welcome back, ${esc(state.studentName)}.` : "Your course dashboard."}</h1><p>Complete each taught learning segment, demonstrate the reasoning in an evidence lab, and earn 80% or better on every competency gate.</p></div><div class="mastery-total"><strong>${complete}<small>/10</small></strong><span>modules mastered</span><i><b style="width:${complete * 10}%"></b></i></div></section>
         <section class="dashboard-body">
           <div class="dashboard-toolbar"><div><span>YOUR PRESCRIBED ORDER</span><p>Based on your ${allScores.reduce((s,x)=>s+x.correct,0)}/30 baseline result</p></div><div><button class="small-button" data-copy-report>Copy progress report</button><button class="small-button quiet" data-print>Print</button></div></div>
           <div class="learning-route">${ordered.map((module,index) => {
             const p = prescription(module.id); const ms = moduleState(module.id); const passed = ms.gate.passed; const lessonDone = lessonComplete(module); const labDone = labsComplete(module);
-            return `<article class="route-card ${p.key} ${passed ? "mastered" : ""}"><div class="route-order"><span>${String(index+1).padStart(2,"0")}</span><i></i></div><div class="route-main"><div class="route-meta"><span>Module ${String(module.id).padStart(2,"0")} · ${module.weeks}</span><b>${passed ? "Mastered" : p.label}</b></div><h2>${esc(module.title)}</h2><p>${esc(module.purpose)}</p><div class="route-checks"><span class="${lessonDone ? "done" : ""}">Lecture ${lessonDone ? "complete" : "pending"}</span><span class="${labDone ? "done" : ""}">Lab ${labDone ? "complete" : "pending"}</span><span class="${passed ? "done" : ""}">Gate ${passed ? `${ms.gate.score}/5 passed` : "pending"}</span></div></div><div class="route-action"><div class="baseline-score"><strong>${allScores.find(s=>s.id===module.id).correct}/3</strong><span>pretest</span></div><button class="button ${passed ? "ghost" : "primary"}" data-module="${module.id}">${passed ? "Review module" : "Continue"}<span>→</span></button></div></article>`;
+            return `<article class="route-card ${p.key} ${passed ? "mastered" : ""}"><div class="route-order"><span>${String(index+1).padStart(2,"0")}</span><i></i></div><div class="route-main"><div class="route-meta"><span>Module ${String(module.id).padStart(2,"0")} · ${module.weeks}</span><b>${passed ? "Mastered" : p.label}</b></div><h2>${esc(module.title)}</h2><p>${esc(module.purpose)}</p><div class="route-checks"><span class="${lessonDone ? "done" : ""}">Instruction ${lessonDone ? "complete" : "pending"}</span><span class="${labDone ? "done" : ""}">Evidence lab ${labDone ? "complete" : "pending"}</span><span class="${passed ? "done" : ""}">Gate ${passed ? `${ms.gate.score}/5 passed` : "pending"}</span></div></div><div class="route-action"><div class="baseline-score"><strong>${allScores.find(s=>s.id===module.id).correct}/3</strong><span>pretest</span></div><button class="button ${passed ? "ghost" : "primary"}" data-module="${module.id}">${passed ? "Review module" : "Continue"}<span>→</span></button></div></article>`;
           }).join("")}</div>
           <div class="dashboard-note"><strong>Progress is saved on this device.</strong><p>No account is required. If you switch browsers or devices, your progress will not follow automatically. Copy or print your report before clearing browser data.</p></div>
         </section>
@@ -242,13 +269,14 @@
           <a href="#/path" class="back-path">← My learning path</a>
           <div class="module-index">Module ${String(module.id).padStart(2,"0")}</div><h2>${esc(module.title)}</h2><p>${module.weeks} · ${module.phase} phase</p>
           <div class="prescription-badge ${p.key}"><strong>${p.label}</strong><span>${esc(p.detail)}</span></div>
-          <nav><button data-scroll="overview">Overview</button>${module.lessons.map((l,i)=>`<button data-scroll="lesson-${i}"><span class="check-dot ${ms.lessons[i] ? "done" : ""}"></span>Lecture ${i+1}</button>`).join("")}<button data-scroll="lab"><span class="check-dot ${labsComplete(module) ? "done" : ""}"></span>Lab work</button><button data-scroll="gate"><span class="check-dot ${passed ? "done" : ""}"></span>Competency gate</button></nav>
+          <nav><button data-scroll="overview">Overview + pacing</button>${module.lessons.map((l,i)=>`<button data-scroll="lesson-${i}"><span class="check-dot ${lessonRecord(module.id,i).done ? "done" : ""}"></span>Learning segment ${i+1}</button>`).join("")}<button data-scroll="lab"><span class="check-dot ${labsComplete(module) ? "done" : ""}"></span>Evidence lab</button><button data-scroll="gate"><span class="check-dot ${passed ? "done" : ""}"></span>Competency gate</button></nav>
         </aside>
         <section class="module-content">
-          <section class="module-banner" id="overview"><div><span>${module.phase.toUpperCase()} · ${module.weeks}</span><h1>${esc(module.title)}</h1><p>${esc(module.purpose)}</p></div><div class="module-status-ring ${passed ? "passed" : ""}"><strong>${passed ? "✓" : module.id}</strong><span>${passed ? "Mastered" : "In progress"}</span></div></section>
+          <section class="module-banner" id="overview"><div><span>${module.phase.toUpperCase()} · ${module.weeks} · ${module.learning.time}</span><h1>${esc(module.title)}</h1><p>${esc(module.purpose)}</p><div class="concept-strip">${module.learning.concepts.map(item=>`<i>${esc(item)}</i>`).join("")}</div></div><div class="module-status-ring ${passed ? "passed" : ""}"><strong>${passed ? "✓" : module.id}</strong><span>${passed ? "Mastered" : "In progress"}</span></div></section>
           <section class="outcomes-block"><span class="content-kicker">By the end, you can…</span><div>${module.outcomes.map((outcome,i)=>`<article><span>0${i+1}</span><p>${esc(outcome)}</p></article>`).join("")}</div></section>
-          ${module.lessons.map((lesson,index) => lectureBlock(module, lesson, index, !!ms.lessons[index])).join("")}
-          <section class="lab-section" id="lab"><div class="section-title"><div><span class="content-kicker">Practice with evidence</span><h2>Applied lab work</h2></div><p>${module.labs.length} lab${module.labs.length>1?"s":""} · complete all before the gate</p></div>
+          <section class="pacing-plan"><div><span class="content-kicker">Recommended pace</span><h2>Learn across short sessions.</h2><p>Stop after each session and return later when possible. The retrieval built into the next session is part of learning.</p></div><ol>${module.learning.sessions.map((item,index)=>`<li><b>0${index+1}</b><span>${esc(item)}</span></li>`).join("")}</ol></section>
+          ${module.lessons.map((lesson,index) => lectureBlock(module, lesson, index, lessonRecord(module.id,index))).join("")}
+          <section class="lab-section" id="lab"><div class="section-title"><div><span class="content-kicker">Investigate with evidence</span><h2>Substantive lab work</h2></div><p>${module.labs.length} lab${module.labs.length>1?"s":""} · data, analysis, and decision required</p></div>
             ${module.labs.map((lab,index)=>labBlock(module, lab, index, ms.labs[index])).join("")}
           </section>
           ${gateBlock(module, ms, open)}
@@ -257,37 +285,61 @@
       </main>`;
   }
 
-  function lectureBlock(module, lesson, index, done) {
+  function lessonReady(lesson, record) {
+    return lesson.checkpoint.every((item, qIndex) => record.answers[qIndex] === item.a) && record.explanation.trim().length >= 80;
+  }
+
+  function lectureBlock(module, lesson, index, record) {
+    const ready = lessonReady(lesson, record);
     return `<section class="lecture-block" id="lesson-${index}">
-      <div class="lecture-number"><span>Lecture ${String(index+1).padStart(2,"0")}</span><i></i></div>
-      <div class="lecture-title"><div><span class="content-kicker">Big idea</span><h2>${esc(lesson.title)}</h2></div><button class="completion-button ${done ? "done" : ""}" data-lesson="${module.id}:${index}">${done ? "✓ Lecture reviewed" : "Mark lecture reviewed"}</button></div>
-      <p class="big-idea">${esc(lesson.bigIdea)}</p>
-      <div class="learning-pair"><article class="concept-card"><span>01 · MODEL</span><h3>${esc(lesson.modelTitle)}</h3><ol>${lesson.model.map((item,i)=>`<li><b>${String(i+1).padStart(2,"0")}</b><p>${esc(item)}</p></li>`).join("")}</ol></article><article class="concept-card mechanism"><span>02 · MECHANISM</span><h3>${esc(lesson.mechanismTitle)}</h3><ol>${lesson.mechanism.map((item,i)=>`<li><b>${String(i+1).padStart(2,"0")}</b><p>${esc(item)}</p></li>`).join("")}</ol></article></div>
+      <div class="lecture-number"><span>Learning segment ${String(index+1).padStart(2,"0")} · ${lesson.minutes} minutes</span><i></i></div>
+      <div class="lecture-title"><div><span class="content-kicker">Guiding question</span><h2>${esc(lesson.title)}</h2></div><span class="segment-state ${record.done ? "done" : ""}">${record.done ? "✓ Completed" : "Teach → model → retrieve → explain"}</span></div>
+      <p class="guiding-question">${esc(lesson.guidingQuestion)}</p>
+      <div class="lesson-sections">${lesson.sections.map((section,sectionIndex)=>`<article class="lesson-section"><span>0${sectionIndex+1}</span><div><h3>${esc(section.title)}</h3>${section.paragraphs.map(paragraph=>`<p>${esc(paragraph)}</p>`).join("")}${section.points.length?`<ul>${section.points.map(point=>`<li>${esc(point)}</li>`).join("")}</ul>`:""}</div></article>`).join("")}</div>
+      <article class="worked-example"><div><span>Worked example</span><h3>${esc(lesson.worked.title)}</h3><p>${esc(lesson.worked.situation)}</p></div><ol>${lesson.worked.steps.map((step,i)=>`<li><b>${i+1}</b><span>${esc(step)}</span></li>`).join("")}</ol><strong>${esc(lesson.worked.conclusion)}</strong></article>
       <div class="teaching-translation"><div><span class="content-kicker">Teaching translation</span><h3>Moves you can use Monday</h3></div><ul>${lesson.teacherMoves.map(move=>`<li>${esc(move)}</li>`).join("")}</ul></div>
       <div class="case-prompt"><span>APPLIED CASE</span><p>${esc(lesson.case)}</p><small>Reason through it: Observe → Explain → Decide → Verify</small></div>
+      <section class="retrieval-check"><div class="retrieval-head"><span>Retrieval check</span><h3>Close the explanation above. Answer from memory.</h3><p>Both answers must be correct. Feedback is immediate so you can repair the idea before continuing.</p></div>${lesson.checkpoint.map((item,qIndex)=>{const selected=record.answers[qIndex];return `<article><h4>${qIndex+1}. ${esc(item.q)}</h4><div>${item.o.map((option,oIndex)=>`<button data-lesson-answer="${module.id}:${index}:${qIndex}:${oIndex}" class="${selected===oIndex?"selected":""} ${selected!==undefined&&oIndex===item.a?"best":""}"><span>${String.fromCharCode(65+oIndex)}</span>${esc(option)}</button>`).join("")}</div>${selected!==undefined?`<p class="${selected===item.a?"correct":"review"}"><strong>${selected===item.a?"Correct.":"Not yet."}</strong> ${esc(item.x)}</p>`:""}</article>`;}).join("")}</section>
+      <section class="self-explain"><label for="explain-${module.id}-${index}"><strong>Self-explanation</strong><span>${esc(lesson.explain)}</span></label><textarea id="explain-${module.id}-${index}" data-lesson-explain="${module.id}:${index}" placeholder="Explain the mechanism in your own words and connect it to a teaching decision…">${esc(record.explanation)}</textarea><div><small>${record.explanation.length}/80 minimum characters · principle and application required</small><button class="completion-button ${record.done ? "done" : ""}" data-lesson-complete="${module.id}:${index}" ${(!ready && !record.done) ? "disabled" : ""}>${record.done ? "✓ Segment completed" : "Complete learning segment"}</button></div></section>
     </section>`;
   }
 
   function labBlock(module, lab, index, saved) {
     saved = saved || {notes:"",safety:false,done:false};
-    return `<article class="lab-card ${saved.done ? "complete" : ""}"><div class="lab-head"><div><span>Lab ${index+1}</span><h3>${esc(lab.title)}</h3></div><strong>${saved.done ? "✓ Complete" : "Evidence required"}</strong></div><div class="lab-layout"><div><h4>Materials</h4><p>${esc(lab.materials)}</p><h4>Safety check</h4><label class="safety-check"><input type="checkbox" data-lab-safety="${module.id}:${index}" ${saved.safety ? "checked" : ""}><span></span><p>${esc(lab.safety)}</p></label></div><div><h4>Procedure</h4><ol>${lab.steps.map(step=>`<li>${esc(step)}</li>`).join("")}</ol></div></div><div class="lab-evidence"><label for="lab-${module.id}-${index}"><strong>Evidence note</strong><span>${esc(lab.evidence)}</span></label><textarea id="lab-${module.id}-${index}" data-lab-notes="${module.id}:${index}" placeholder="Record your observation, result, or decision here…">${esc(saved.notes)}</textarea><div><small>${saved.notes.length} characters · safety confirmation required</small><button class="completion-button ${saved.done ? "done" : ""}" data-lab-complete="${module.id}:${index}" ${(!saved.safety || saved.notes.trim().length < 20) ? "disabled" : ""}>${saved.done ? "✓ Lab evidence saved" : "Complete this lab"}</button></div></div></article>`;
+    return `<article class="lab-card ${saved.done ? "complete" : ""}"><div class="lab-head"><div><span>Lab ${index+1} · ${lab.minutes} minutes</span><h3>${esc(lab.title)}</h3></div><strong>${saved.done ? "✓ Complete" : "Data + analysis required"}</strong></div>
+      <div class="lab-primer"><span>Purpose</span><p>${esc(lab.primer)}</p><strong>${esc(lab.question)}</strong></div>
+      <div class="lab-layout"><div><h4>Materials</h4><p>${esc(lab.materials)}</p><h4>Variables and controls</h4><ul>${lab.variables.map(item=>`<li>${esc(item)}</li>`).join("")}</ul><h4>Safety confirmation</h4><label class="safety-check"><input type="checkbox" data-lab-safety="${module.id}:${index}" ${saved.safety ? "checked" : ""}><span></span><p>${esc(lab.safety)}</p></label></div><div><h4>Procedure</h4><ol>${lab.steps.map(step=>`<li>${esc(step)}</li>`).join("")}</ol></div></div>
+      <div class="lab-analysis-grid"><article><h4>Record these data</h4><ul>${lab.data.map(item=>`<li>${esc(item)}</li>`).join("")}</ul></article><article><h4>Required calculations</h4><ul>${lab.calculations.map(item=>`<li>${esc(item)}</li>`).join("")}</ul></article><article><h4>Analyze</h4><ol>${lab.analysis.map(item=>`<li>${esc(item)}</li>`).join("")}</ol></article></div>
+      <div class="lab-quality"><strong>Completion standard</strong>${lab.quality.map(item=>`<span>✓ ${esc(item)}</span>`).join("")}</div>
+      <div class="lab-evidence"><label for="lab-${module.id}-${index}"><strong>Lab record and interpretation</strong><span>${esc(lab.evidence)}</span></label><textarea id="lab-${module.id}-${index}" data-lab-notes="${module.id}:${index}" placeholder="Enter your measurements, calculations, interpretation, and teaching decision…">${esc(saved.notes)}</textarea><div><small>${saved.notes.length}/${lab.minChars} minimum characters · safety confirmation required</small><button class="completion-button ${saved.done ? "done" : ""}" data-lab-complete="${module.id}:${index}" ${(!saved.safety || saved.notes.trim().length < lab.minChars) ? "disabled" : ""}>${saved.done ? "✓ Lab evidence saved" : "Complete this lab"}</button></div></div></article>`;
+  }
+
+  function selectGateForm(module, previous = []) {
+    const available = module.gateBank.map(item=>item.id).filter(id=>!previous.includes(id));
+    const pool = available.length >= 5 ? available : module.gateBank.map(item=>item.id);
+    return pool.slice(0,5);
   }
 
   function gateQuestions(module) {
-    return [...DATA.pretest.filter(q=>q.m===module.id).map(q=>({q:q.q,o:q.o,a:q.a,x:q.x})), ...DATA.gateExtra[module.id]];
+    const gate = moduleState(module.id).gate;
+    if (!gate.form.length) gate.form = selectGateForm(module, gate.lastForm);
+    return gate.form.map(id=>module.gateBank.find(item=>item.id===id));
   }
 
   function gateBlock(module, ms, open) {
     const gate = ms.gate; const items = gateQuestions(module);
     if (!state.pretestFinished) return `<section class="gate-section locked" id="gate"><div class="gate-lock">LOCKED</div><h2>Complete the baseline pretest first.</h2><p>Your pretest determines which learning work is required before this competency gate.</p><button class="button primary" data-go="#/pretest">Open pretest <span>→</span></button></section>`;
-    if (!open) return `<section class="gate-section locked" id="gate"><div class="gate-lock">LOCKED</div><h2>Finish the lecture and lab evidence first.</h2><p>The gate opens when every lecture is marked reviewed and every lab includes a safety confirmation plus an evidence note.</p><div class="unlock-list"><span class="${lessonComplete(module)?"done":""}">Lecture sequence</span><span class="${labsComplete(module)?"done":""}">Lab evidence</span></div></section>`;
-    return `<section class="gate-section ${gate.passed ? "passed" : ""}" id="gate"><div class="section-title"><div><span class="content-kicker">Demonstrate competency</span><h2>Module ${module.id} mastery gate</h2></div><p>Pass with 4 of 5 correct · unlimited attempts</p></div>
+    if (!open && !gate.submitted) return `<section class="gate-section locked" id="gate"><div class="gate-lock">LOCKED</div><h2>Finish the taught segments and lab evidence first.</h2><p>The gate opens when every required learning segment includes correct retrieval plus a self-explanation, and every lab contains its complete evidence record.</p><div class="unlock-list"><span class="${lessonComplete(module)?"done":""}">Taught segments</span><span class="${labsComplete(module)?"done":""}">Evidence lab</span></div></section>`;
+    const missed = gate.submitted && !gate.passed ? items.filter((item,index)=>gate.answers[index]!==item.a) : [];
+    const remediationReady = gate.requiredLessons.every(index=>lessonRecord(module.id,index).done) && labsComplete(module) && (gate.remediationNote||"").trim().length >= 120;
+    return `<section class="gate-section ${gate.passed ? "passed" : ""}" id="gate"><div class="section-title"><div><span class="content-kicker">Demonstrate competency</span><h2>Module ${module.id} mastery gate</h2></div><p>Fresh five-question form · pass with 4 of 5 correct</p></div>
       ${gate.passed ? `<div class="mastery-banner"><span>✓</span><div><strong>Competency demonstrated</strong><p>You scored ${gate.score}/5 (${gate.score*20}%) on attempt ${gate.attempts}. This module is complete.</p></div><button class="button ghost light" data-gate-retry="${module.id}">Practice again</button></div>` : ""}
       <div class="gate-questions">${items.map((q,index)=>{
         const selected=gate.answers[index]; const correct=gate.submitted && selected===q.a; const wrong=gate.submitted && selected!==undefined && selected!==q.a;
         return `<article class="gate-question ${correct?"correct":""} ${wrong?"wrong":""}"><span>Question ${index+1}</span><h3>${esc(q.q)}</h3><div>${q.o.map((option,oi)=>`<button data-gate-answer="${module.id}:${index}:${oi}" class="${selected===oi?"selected":""} ${gate.submitted&&oi===q.a?"best":""}" ${gate.submitted?"disabled":""}><span>${String.fromCharCode(65+oi)}</span>${esc(option)}</button>`).join("")}</div>${gate.submitted?`<p class="gate-feedback"><strong>${selected===q.a?"Correct.":"Review:"}</strong> ${esc(q.x)}</p>`:""}</article>`;
       }).join("")}</div>
-      <div class="gate-submit">${gate.submitted&&!gate.passed?`<div><strong>${gate.score}/5 · Not yet</strong><p>Review the feedback, return to the relevant lecture, then try again.</p></div><button class="button primary" data-gate-retry="${module.id}">Review and retry <span>↻</span></button>`:`<div><strong>${gate.passed?"Optional practice":"Ready to submit?"}</strong><p>${gate.passed?"A new attempt will not remove your mastery record.":"You need at least 4 correct answers."}</p></div><button class="button primary" data-gate-submit="${module.id}" ${Object.keys(gate.answers).length<5||gate.submitted?"disabled":""}>Score this gate <span>→</span></button>`}</div>
+      ${gate.submitted&&!gate.passed?`<section class="corrective-study"><span class="content-kicker">Corrective instruction before the next form</span><h3>Your next gate will contain five different questions.</h3><p>Use the feedback above, revisit the prescribed segments, and explain the corrected principles. A direct gate-first attempt that does not pass also requires the evidence lab.</p><div class="remediation-list">${missed.map(item=>`<a data-scroll="lesson-${item.lesson}"><b>Review segment ${item.lesson+1}</b><span>${esc(item.x)}</span></a>`).join("")}<a data-scroll="lab"><b>Complete/recheck the evidence lab</b><span>Use the principle in a measured investigation and teaching decision.</span></a></div><label><strong>Corrective self-explanation</strong><span>For each missed idea, explain why the correct principle is true and why your original choice was less defensible.</span><textarea data-remediation-note="${module.id}" placeholder="Write at least 120 characters of corrected reasoning…">${esc(gate.remediationNote||"")}</textarea><small>${(gate.remediationNote||"").length}/120 minimum characters</small></label></section>`:""}
+      <div class="gate-submit">${gate.submitted&&!gate.passed?`<div><strong>${gate.score}/5 · Correct, then retry</strong><p>${remediationReady?"Corrective work complete. Generate a different five-question form.":"Complete the listed instruction, lab, and corrective explanation."}</p></div><button class="button primary" data-gate-retry="${module.id}" ${remediationReady?"":"disabled"}>Generate new questions <span>↻</span></button>`:`<div><strong>${gate.passed?"Optional practice":"Ready to submit?"}</strong><p>${gate.passed?"A new five-question form will not remove your mastery record.":"You need at least 4 correct answers."}</p></div><button class="button primary" data-gate-submit="${module.id}" ${Object.keys(gate.answers).length<5||gate.submitted?"disabled":""}>Score this gate <span>→</span></button>`}</div>
     </section>`;
   }
 
@@ -318,13 +370,16 @@
     app.querySelectorAll("[data-confidence]").forEach(el=>el.addEventListener("click",()=>{const q=DATA.pretest[state.pretestIndex];state.confidence[q.id]=Number(el.dataset.confidence);save();render();}));
     const next=app.querySelector("[data-test-next]"); if(next) next.addEventListener("click",()=>{if(state.pretestIndex===29){state.pretestFinished=true;save();render();window.scrollTo(0,0);}else{state.pretestIndex++;save();render();window.scrollTo(0,0);}});
     const prev=app.querySelector("[data-test-prev]"); if(prev) prev.addEventListener("click",()=>{state.pretestIndex=Math.max(0,state.pretestIndex-1);save();render();window.scrollTo(0,0);});
-    app.querySelectorAll("[data-lesson]").forEach(el=>el.addEventListener("click",()=>{const [m,i]=el.dataset.lesson.split(":");moduleState(m).lessons[i]=!moduleState(m).lessons[i];save();render();document.getElementById(`lesson-${i}`)?.scrollIntoView();}));
-    app.querySelectorAll("[data-lab-notes]").forEach(el=>el.addEventListener("input",()=>{const [m,i]=el.dataset.labNotes.split(":");const ms=moduleState(m);ms.labs[i]=Object.assign({notes:"",safety:false,done:false},ms.labs[i],{notes:el.value});if(el.value.trim().length<20)ms.labs[i].done=false;save();const button=app.querySelector(`[data-lab-complete="${m}:${i}"]`);if(button)button.disabled=!(ms.labs[i].safety&&el.value.trim().length>=20);const small=el.parentElement.querySelector("small");if(small)small.textContent=`${el.value.length} characters · safety confirmation required`;}));
+    app.querySelectorAll("[data-lesson-answer]").forEach(el=>el.addEventListener("click",()=>{const [m,i,qIndex,a]=el.dataset.lessonAnswer.split(":");const record=lessonRecord(m,i);record.answers[qIndex]=Number(a);record.done=false;save();render();document.getElementById(`lesson-${i}`)?.scrollIntoView();}));
+    app.querySelectorAll("[data-lesson-explain]").forEach(el=>el.addEventListener("input",()=>{const [m,i]=el.dataset.lessonExplain.split(":");const record=lessonRecord(m,i);record.explanation=el.value;if(el.value.trim().length<80)record.done=false;save();const lesson=DATA.modules.find(item=>item.id===Number(m)).lessons[Number(i)];const button=app.querySelector(`[data-lesson-complete="${m}:${i}"]`);if(button)button.disabled=!lessonReady(lesson,record);const small=el.parentElement.querySelector("small");if(small)small.textContent=`${el.value.length}/80 minimum characters · principle and application required`;}));
+    app.querySelectorAll("[data-lesson-complete]").forEach(el=>el.addEventListener("click",()=>{const [m,i]=el.dataset.lessonComplete.split(":");const record=lessonRecord(m,i);const lesson=DATA.modules.find(item=>item.id===Number(m)).lessons[Number(i)];if(lessonReady(lesson,record)){record.done=true;save();render();document.getElementById(`lesson-${i}`)?.scrollIntoView();}}));
+    app.querySelectorAll("[data-lab-notes]").forEach(el=>el.addEventListener("input",()=>{const [m,i]=el.dataset.labNotes.split(":");const ms=moduleState(m);const lab=DATA.modules.find(item=>item.id===Number(m)).labs[Number(i)];ms.labs[i]=Object.assign({notes:"",safety:false,done:false},ms.labs[i],{notes:el.value});if(el.value.trim().length<lab.minChars)ms.labs[i].done=false;save();const button=app.querySelector(`[data-lab-complete="${m}:${i}"]`);if(button)button.disabled=!(ms.labs[i].safety&&el.value.trim().length>=lab.minChars);const small=el.parentElement.querySelector("small");if(small)small.textContent=`${el.value.length}/${lab.minChars} minimum characters · safety confirmation required`;}));
     app.querySelectorAll("[data-lab-safety]").forEach(el=>el.addEventListener("change",()=>{const [m,i]=el.dataset.labSafety.split(":");const ms=moduleState(m);ms.labs[i]=Object.assign({notes:"",safety:false,done:false},ms.labs[i],{safety:el.checked});if(!el.checked)ms.labs[i].done=false;save();render();document.getElementById("lab")?.scrollIntoView();}));
-    app.querySelectorAll("[data-lab-complete]").forEach(el=>el.addEventListener("click",()=>{const [m,i]=el.dataset.labComplete.split(":");const lab=moduleState(m).labs[i];if(lab&&lab.safety&&lab.notes.trim().length>=20){lab.done=true;save();render();document.getElementById("lab")?.scrollIntoView();}}));
+    app.querySelectorAll("[data-lab-complete]").forEach(el=>el.addEventListener("click",()=>{const [m,i]=el.dataset.labComplete.split(":");const savedLab=moduleState(m).labs[i];const lab=DATA.modules.find(item=>item.id===Number(m)).labs[Number(i)];if(savedLab&&savedLab.safety&&savedLab.notes.trim().length>=lab.minChars){savedLab.done=true;save();render();document.getElementById("lab")?.scrollIntoView();}}));
     app.querySelectorAll("[data-gate-answer]").forEach(el=>el.addEventListener("click",()=>{const [m,q,a]=el.dataset.gateAnswer.split(":");const gate=moduleState(m).gate;if(!gate.submitted){gate.answers[q]=Number(a);save();render();document.getElementById("gate")?.scrollIntoView();}}));
-    app.querySelectorAll("[data-gate-submit]").forEach(el=>el.addEventListener("click",()=>{const id=Number(el.dataset.gateSubmit);const gate=moduleState(id).gate;const items=gateQuestions(DATA.modules[id-1]);gate.score=items.filter((q,i)=>gate.answers[i]===q.a).length;gate.attempts++;gate.submitted=true;if(gate.score>=4)gate.passed=true;save();render();document.getElementById("gate")?.scrollIntoView();}));
-    app.querySelectorAll("[data-gate-retry]").forEach(el=>el.addEventListener("click",()=>{const gate=moduleState(el.dataset.gateRetry).gate;gate.answers={};gate.submitted=false;save();render();document.getElementById("gate")?.scrollIntoView();}));
+    app.querySelectorAll("[data-remediation-note]").forEach(el=>el.addEventListener("input",()=>{const id=Number(el.dataset.remediationNote);const gate=moduleState(id).gate;gate.remediationNote=el.value;save();const module=DATA.modules.find(item=>item.id===id);const ready=gate.requiredLessons.every(index=>lessonRecord(id,index).done)&&labsComplete(module)&&el.value.trim().length>=120;const button=app.querySelector(`[data-gate-retry="${id}"]`);if(button)button.disabled=!ready;const small=el.parentElement.querySelector("small");if(small)small.textContent=`${el.value.length}/120 minimum characters`;}));
+    app.querySelectorAll("[data-gate-submit]").forEach(el=>el.addEventListener("click",()=>{const id=Number(el.dataset.gateSubmit);const gate=moduleState(id).gate;const items=gateQuestions(DATA.modules[id-1]);gate.score=items.filter((item,i)=>gate.answers[i]===item.a).length;gate.attempts++;gate.submitted=true;if(gate.score>=4){gate.passed=true;gate.remediationRequired=false;}else{gate.passed=false;gate.remediationRequired=true;gate.requiredLessons=[...new Set(items.filter((item,i)=>gate.answers[i]!==item.a).map(item=>item.lesson))];gate.remediationNote="";}save();render();document.getElementById("gate")?.scrollIntoView();}));
+    app.querySelectorAll("[data-gate-retry]").forEach(el=>el.addEventListener("click",()=>{const id=Number(el.dataset.gateRetry);const module=DATA.modules.find(item=>item.id===id);const gate=moduleState(id).gate;if(gate.submitted&&!gate.passed){const ready=gate.requiredLessons.every(index=>lessonRecord(id,index).done)&&labsComplete(module)&&(gate.remediationNote||"").trim().length>=120;if(!ready)return;}gate.lastForm=[...gate.form];gate.form=selectGateForm(module,gate.lastForm);gate.answers={};gate.submitted=false;gate.score=0;gate.remediationRequired=false;gate.requiredLessons=[];gate.remediationNote="";save();render();document.getElementById("gate")?.scrollIntoView();}));
     app.querySelectorAll("[data-print]").forEach(el=>el.addEventListener("click",()=>window.print()));
     app.querySelectorAll("[data-copy-report]").forEach(el=>el.addEventListener("click",async()=>{await navigator.clipboard.writeText(reportText());el.textContent="Copied!";setTimeout(()=>el.textContent="Copy progress report",1500);}));
   }
