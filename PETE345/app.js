@@ -7,9 +7,14 @@
   const MODULE_VIDEOS = {
     1: { src: "media/module-1.mp4", poster: "media/module-1.jpg", duration: "7:25", focus: "Notice how movement observation becomes precise anatomical description." },
     2: { src: "media/module-2.mp4", poster: "media/module-2.jpg", duration: "9:39", focus: "Track how joint structure and muscle action shape what a learner can control." },
-    3: { src: "media/module-3.mp4", poster: "media/module-3.jpg", duration: "8:06", focus: "Listen for the links among neural signaling, force grading, practice, and feedback." },
+    3: { src: "media/module-3.mp4", poster: "media/module-3.jpg", duration: "8:06", focus: "Trace the links among neural signaling, force grading, practice, and feedback." },
     4: { src: "media/module-4.mp4", poster: "media/module-4.jpg", duration: "8:20", focus: "Separate what the movement does from the forces that explain why it changes." },
-    5: { src: "media/module-5.mp4", poster: "media/module-5.jpg", duration: "10:02", focus: "Follow how exercise demand shifts energy-system contribution and oxygen delivery." }
+    5: { src: "media/module-5.mp4", poster: "media/module-5.jpg", duration: "10:02", focus: "Follow how exercise demand shifts energy-system contribution and oxygen delivery." },
+    6: { src: "media/module-6.mp4", poster: "media/module-6.jpg", duration: "7:49", focus: "Track how training stress, fatigue, recovery, and adaptation change readiness over time." },
+    7: { src: "media/module-7.mp4", poster: "media/module-7.jpg", duration: "8:36", focus: "Identify the evidence that supports safe progression in strength development and youth training." },
+    8: { src: "media/module-8.mp4", poster: "media/module-8.jpg", duration: "7:54", focus: "Connect force, velocity, braking, and technique to teachable power, speed, and agility decisions." },
+    9: { src: "media/module-9.mp4", poster: "media/module-9.jpg", duration: "7:53", focus: "Distinguish trustworthy measurement from noise before using an assessment result to make a decision." },
+    10: { src: "media/module-10.mp4", poster: "media/module-10.jpg", duration: "7:45", focus: "Follow the chain from learner need to evidence-based programming, monitoring, and revision." }
   };
 
   const blank = () => ({
@@ -217,7 +222,7 @@
               <button class="button primary" data-go="${primary.hash}">${primary.label}<span>→</span></button>
               <a class="button ghost" href="#course-map">Explore the modules</a>
             </div>
-            <div class="hero-facts"><div><strong>10</strong><span>learning modules</span></div><div><strong>5</strong><span>instructor videos</span></div><div><strong>80%</strong><span>mastery threshold</span></div></div>
+            <div class="hero-facts"><div><strong>10</strong><span>learning modules</span></div><div><strong>10</strong><span>instructor videos</span></div><div><strong>80%</strong><span>mastery threshold</span></div></div>
           </div>
           <div class="hero-system" aria-label="Course reasoning system">
             <div class="system-label">Your reasoning loop</div>
@@ -393,7 +398,7 @@
 
   function lessonSlides(module, lesson) {
     return [
-      { eyebrow:"Orient", title:lesson.guidingQuestion, body:[`This ${lesson.minutes}-minute learning segment is broken into short, learner-controlled chapters. Listen, pause, replay, and use the visual to build a mental model before you retrieve.`], kind:"intro" },
+      { eyebrow:"Orient", title:lesson.guidingQuestion, body:[`This ${lesson.minutes}-minute learning segment is broken into short, learner-controlled chapters. Read at your own pace, move backward whenever needed, and use the visual to build a mental model before you retrieve.`], kind:"intro" },
       ...lesson.sections.map((section,index)=>({ eyebrow:`Explain ${index+1} of ${lesson.sections.length}`, title:section.title, body:section.paragraphs, points:section.points, kind:"concept" })),
       { eyebrow:"Watch the reasoning", title:lesson.worked.title, body:[lesson.worked.situation], points:lesson.worked.steps, conclusion:lesson.worked.conclusion, kind:"worked" },
       { eyebrow:"Teach it", title:"Turn the concept into a decision", body:[lesson.case], points:lesson.teacherMoves, conclusion:"Next: close the explanation and complete the retrieval check from memory.", kind:"apply" }
@@ -425,13 +430,12 @@
     const slides = lessonSlides(module,lesson);
     const slideIndex = Math.min(record.mediaSlide || 0,slides.length-1);
     const slide = slides[slideIndex];
-    const spoken = [slide.eyebrow,slide.title,...slide.body,...(slide.points||[]),slide.conclusion||""].join(". ");
     return `${header("path")}<main class="study-player" data-study-player="${module.id}:${lessonIndex}">
-      <aside class="study-outline"><a href="#/module/${module.id}">← Module ${String(module.id).padStart(2,"0")}</a><span>VISUAL MICROLECTURE</span><h2>${esc(lesson.title)}</h2><p>${lesson.minutes} minutes total · pause whenever you need</p><ol>${slides.map((item,i)=>`<li class="${i===slideIndex?"current":""} ${i<slideIndex||record.mediaComplete?"visited":""}"><button data-slide="${i}"><b>${String(i+1).padStart(2,"0")}</b><span>${esc(item.eyebrow)}<small>${esc(item.title)}</small></span></button></li>`).join("")}</ol></aside>
+      <aside class="study-outline"><a href="#/module/${module.id}">← Module ${String(module.id).padStart(2,"0")}</a><span>SELF-PACED VISUAL LESSON</span><h2>${esc(lesson.title)}</h2><p>${lesson.minutes} minutes total · read and pause whenever you need</p><ol>${slides.map((item,i)=>`<li class="${i===slideIndex?"current":""} ${i<slideIndex||record.mediaComplete?"visited":""}"><button data-slide="${i}"><b>${String(i+1).padStart(2,"0")}</b><span>${esc(item.eyebrow)}<small>${esc(item.title)}</small></span></button></li>`).join("")}</ol></aside>
       <section class="study-stage">
         <div class="study-progress"><span>Chapter ${slideIndex+1} of ${slides.length}</span><i><b style="width:${(slideIndex+1)/slides.length*100}%"></b></i><span>~${Math.max(2,Math.ceil(lesson.minutes/slides.length))} min</span></div>
         <article class="micro-slide ${slide.kind}"><div class="slide-copy"><span>${esc(slide.eyebrow)}</span><h1>${esc(slide.title)}</h1>${slide.body.map(p=>`<p>${esc(p)}</p>`).join("")}${slide.points?.length?`<ol>${slide.points.map((p,i)=>`<li><b>${i+1}</b><span>${esc(p)}</span></li>`).join("")}</ol>`:""}${slide.conclusion?`<strong>${esc(slide.conclusion)}</strong>`:""}</div>${vectorVisual(module.id)}</article>
-        <div class="study-controls"><button class="study-audio" data-narrate="${esc(spoken)}" aria-label="Play narration for this chapter"><span>▶</span><div><strong>Listen to this chapter</strong><small>Browser narration · transcript remains visible</small></div></button><div><button class="link-button" data-slide="${Math.max(0,slideIndex-1)}" ${slideIndex===0?"disabled":""}>← Back</button>${slideIndex===slides.length-1?`<button class="button primary" data-finish-media="${module.id}:${lessonIndex}">Finish and retrieve <span>→</span></button>`:`<button class="button primary" data-slide="${slideIndex+1}">Next chapter <span>→</span></button>`}</div></div>
+        <div class="study-controls"><div class="study-reading"><span>${String(slideIndex+1).padStart(2,"0")}</span><div><strong>Read at your pace</strong><small>The complete chapter stays on screen. Use Back or Next when you are ready.</small></div></div><div><button class="link-button" data-slide="${Math.max(0,slideIndex-1)}" ${slideIndex===0?"disabled":""}>← Back</button>${slideIndex===slides.length-1?`<button class="button primary" data-finish-media="${module.id}:${lessonIndex}">Finish and retrieve <span>→</span></button>`:`<button class="button primary" data-slide="${slideIndex+1}">Next chapter <span>→</span></button>`}</div></div>
         <details class="study-transcript"><summary>Open the complete text transcript</summary>${lesson.sections.map(s=>`<section><h3>${esc(s.title)}</h3>${s.paragraphs.map(p=>`<p>${esc(p)}</p>`).join("")}</section>`).join("")}</details>
       </section></main>`;
   }
@@ -442,8 +446,8 @@
       <div class="lecture-number"><span>Learning segment ${String(index+1).padStart(2,"0")} · ${lesson.minutes} minutes</span><i></i></div>
       <div class="lecture-title"><div><span class="content-kicker">Guiding question</span><h2>${esc(lesson.title)}</h2></div><span class="segment-state ${record.done ? "done" : ""}">${record.done ? "✓ Completed" : "Teach → model → retrieve → explain"}</span></div>
       <p class="guiding-question">${esc(lesson.guidingQuestion)}</p>
-      <section class="media-launch"><div><span>LEARNER-PACED · NARRATED · CAPTIONED</span><h3>${record.mediaSlide ? "Resume your visual microlecture" : "Start with the visual explanation"}</h3><p>${lesson.sections.length+3} short chapters combine narration, precise diagrams, complete captions, and an optional text transcript. You control every transition.</p><div><i>◉ ${lesson.minutes} min</i><i>◉ ${lesson.sections.length+3} chapters</i><i>◉ Replay anytime</i></div></div>${vectorVisual(module.id)}<button class="button primary" data-study="${module.id}:${index}">${record.mediaSlide ? "Resume lesson" : "Open visual lesson"} <span>→</span></button></section>
-      <details class="lesson-transcript"><summary>Read the lesson transcript instead</summary><div class="lesson-sections">${lesson.sections.map((section,sectionIndex)=>`<article class="lesson-section"><span>0${sectionIndex+1}</span><div><h3>${esc(section.title)}</h3>${section.paragraphs.map(paragraph=>`<p>${esc(paragraph)}</p>`).join("")}${section.points.length?`<ul>${section.points.map(point=>`<li>${esc(point)}</li>`).join("")}</ul>`:""}</div></article>`).join("")}</div></details>
+      <section class="media-launch"><div><span>LEARNER-PACED · READABLE · VISUAL</span><h3>${record.mediaSlide ? "Resume your visual lesson" : "Start with the visual explanation"}</h3><p>${lesson.sections.length+3} short chapters combine explicit teaching, precise diagrams, worked reasoning, and complete on-screen text. You decide when to move forward.</p><div><i>◉ ${lesson.minutes} min</i><i>◉ ${lesson.sections.length+3} chapters</i><i>◉ Revisit anytime</i></div></div>${vectorVisual(module.id)}<button class="button primary" data-study="${module.id}:${index}">${record.mediaSlide ? "Resume lesson" : "Open visual lesson"} <span>→</span></button></section>
+      <details class="lesson-transcript"><summary>Open the full lesson in one continuous reading</summary><div class="lesson-sections">${lesson.sections.map((section,sectionIndex)=>`<article class="lesson-section"><span>0${sectionIndex+1}</span><div><h3>${esc(section.title)}</h3>${section.paragraphs.map(paragraph=>`<p>${esc(paragraph)}</p>`).join("")}${section.points.length?`<ul>${section.points.map(point=>`<li>${esc(point)}</li>`).join("")}</ul>`:""}</div></article>`).join("")}</div></details>
       <article class="worked-example"><div><span>Worked example</span><h3>${esc(lesson.worked.title)}</h3><p>${esc(lesson.worked.situation)}</p></div><ol>${lesson.worked.steps.map((step,i)=>`<li><b>${i+1}</b><span>${esc(step)}</span></li>`).join("")}</ol><strong>${esc(lesson.worked.conclusion)}</strong></article>
       <div class="teaching-translation"><div><span class="content-kicker">Teaching translation</span><h3>Moves you can use Monday</h3></div><ul>${lesson.teacherMoves.map(move=>`<li>${esc(move)}</li>`).join("")}</ul></div>
       <div class="case-prompt"><span>APPLIED CASE</span><p>${esc(lesson.case)}</p><small>Reason through it: Observe → Explain → Decide → Verify</small></div>
@@ -502,7 +506,6 @@
 
   function render() {
     const hash = window.location.hash || "#/home";
-    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
     if (hash.startsWith("#/study/")) { const parts=hash.split("/"); app.innerHTML=studyView(parts[2],parts[3]); }
     else if (hash.startsWith("#/module/")) app.innerHTML = moduleView(hash.split("/")[2]);
     else if (hash === "#/pretest") { if (!state.pretestStarted) { state.pretestStarted = true; save(); } app.innerHTML = pretest(); }
@@ -524,7 +527,6 @@
     });
     app.querySelectorAll("[data-next-action]").forEach(el=>el.addEventListener("click",()=>{const target=el.dataset.nextAction;const anchor=el.dataset.anchor;track("next_action_started",{target,anchor});save();go(target);if(anchor)setTimeout(()=>document.getElementById(anchor)?.scrollIntoView({behavior:"smooth"}),120);}));
     app.querySelectorAll("[data-slide]").forEach(el=>el.addEventListener("click",()=>{const player=app.querySelector("[data-study-player]");if(!player)return;const [m,i]=player.dataset.studyPlayer.split(":");const record=lessonRecord(m,i);record.mediaSlide=Number(el.dataset.slide);track("visual_chapter_viewed",{module:Number(m),lesson:Number(i),chapter:record.mediaSlide});save();render();window.scrollTo({top:0,behavior:"smooth"});}));
-    app.querySelectorAll("[data-narrate]").forEach(el=>el.addEventListener("click",()=>{if(!("speechSynthesis" in window))return;window.speechSynthesis.cancel();const utterance=new SpeechSynthesisUtterance(el.dataset.narrate);utterance.rate=.96;utterance.pitch=1;utterance.onstart=()=>{el.classList.add("playing");el.querySelector("span").textContent="■";};utterance.onend=()=>{el.classList.remove("playing");el.querySelector("span").textContent="▶";};window.speechSynthesis.speak(utterance);track("narration_played",{});save();}));
     app.querySelectorAll("[data-finish-media]").forEach(el=>el.addEventListener("click",()=>{const [m,i]=el.dataset.finishMedia.split(":");const record=lessonRecord(m,i);record.mediaComplete=true;track("visual_lesson_completed",{module:Number(m),lesson:Number(i)});save();go(`#/module/${m}`);setTimeout(()=>document.getElementById(`lesson-${i}`)?.scrollIntoView({behavior:"smooth"}),120);}));
     app.querySelectorAll("[data-answer]").forEach(el=>el.addEventListener("click",()=>{const q=DATA.pretest[state.pretestIndex];state.pretestAnswers[q.id]=Number(el.dataset.answer);save();render();}));
     app.querySelectorAll("[data-confidence]").forEach(el=>el.addEventListener("click",()=>{const q=DATA.pretest[state.pretestIndex];state.confidence[q.id]=Number(el.dataset.confidence);save();render();}));
