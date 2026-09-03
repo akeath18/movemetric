@@ -23,6 +23,23 @@
     @media print{.topbar,.course-footer,.button,.dashboard-toolbar button,.module-sidebar,.module-bottom-nav{display:none!important}.dashboard-head,.result-hero{background:white;color:var(--ink);padding:25px}.dashboard-body,.result-body{padding:20px}.route-card,.prescription{break-inside:avoid}.module-page{display:block}.module-banner{background:white;color:var(--ink)}}
     .instructor-note{padding:18px 7vw;background:#fff0dc;border-bottom:1px solid #dfcaa5;display:grid;grid-template-columns:230px 1fr;gap:20px;align-items:center}.instructor-note>span{font-size:8px;font-weight:800;letter-spacing:.12em;color:#9b542d}.instructor-note strong{font:400 20px var(--serif)}.instructor-note p{margin:3px 0;font-size:10px;color:#6d6252}@media(max-width:680px){.instructor-note{padding:17px 20px;grid-template-columns:1fr;gap:6px}}
   </style>
+  <style>
+    .video-dot{width:14px;height:14px;display:inline-grid;place-items:center;border-radius:50%;background:#22c55e;color:#09111f;font-size:7px}
+    .instructor-video{padding:64px 7vw 70px;background:#101c30;color:var(--white);border-top:1px solid rgba(255,255,255,.08)}
+    .instructor-video-heading{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:36px;align-items:end;margin-bottom:30px}
+    .instructor-video-heading h2{margin:8px 0 10px;font:400 clamp(32px,4vw,48px)/1.04 var(--serif);letter-spacing:-.03em}
+    .instructor-video-heading p{max-width:760px;margin:0;color:#afbed0;font-size:12px}
+    .video-sequence{display:flex;align-items:center;gap:9px;padding:12px 14px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.035)}
+    .video-sequence span{font-size:8px;font-weight:800;letter-spacing:.12em;color:#c6d3e1}.video-sequence i{font-style:normal;color:var(--green)}
+    .instructor-video-frame{position:relative;overflow:hidden;background:#03070d;border:1px solid #263b55;box-shadow:0 28px 70px rgba(0,0,0,.32);aspect-ratio:16/9}
+    .instructor-video-frame video{display:block;width:100%;height:100%;object-fit:contain;background:#03070d}
+    .video-learning-guide{display:grid;grid-template-columns:repeat(3,1fr);margin-top:18px;border:1px solid rgba(255,255,255,.11)}
+    .video-learning-guide article{padding:22px 24px;border-right:1px solid rgba(255,255,255,.11)}.video-learning-guide article:last-child{border-right:0}
+    .video-learning-guide b{font-size:9px;text-transform:uppercase;letter-spacing:.12em;color:var(--green)}
+    .video-learning-guide p{margin:8px 0 0;font-size:10px;line-height:1.6;color:#aebdd0}
+    @media(max-width:800px){.instructor-video{padding:48px 20px}.instructor-video-heading{grid-template-columns:1fr}.video-sequence{justify-self:start}.video-learning-guide{grid-template-columns:1fr}.video-learning-guide article{border-right:0;border-bottom:1px solid rgba(255,255,255,.11)}.video-learning-guide article:last-child{border-bottom:0}}
+    @media print{.instructor-video-frame,.video-sequence{display:none}.instructor-video{background:white;color:var(--ink);padding:25px}.instructor-video-heading p,.video-learning-guide p{color:var(--ink)}.video-learning-guide{grid-template-columns:1fr;border-color:var(--light-line)}.video-learning-guide article{border-color:var(--light-line)}}
+  </style>
   <script src="course-data.js" defer></script>
   <script src="learning-content.js" defer></script>
   <script src="app.js" defer></script>

@@ -4,6 +4,13 @@
   const COURSE_VERSION = 3;
   const PROGRESS_API = "https://pete345-baseline-lab.akeath.chatgpt.site/api/progress";
   const app = document.getElementById("app");
+  const MODULE_VIDEOS = {
+    1: { src: "media/module-1.mp4", poster: "media/module-1.jpg", duration: "7:25", focus: "Notice how movement observation becomes precise anatomical description." },
+    2: { src: "media/module-2.mp4", poster: "media/module-2.jpg", duration: "9:39", focus: "Track how joint structure and muscle action shape what a learner can control." },
+    3: { src: "media/module-3.mp4", poster: "media/module-3.jpg", duration: "8:06", focus: "Listen for the links among neural signaling, force grading, practice, and feedback." },
+    4: { src: "media/module-4.mp4", poster: "media/module-4.jpg", duration: "8:20", focus: "Separate what the movement does from the forces that explain why it changes." },
+    5: { src: "media/module-5.mp4", poster: "media/module-5.jpg", duration: "10:02", focus: "Follow how exercise demand shifts energy-system contribution and oxygen delivery." }
+  };
 
   const blank = () => ({
     studentName: "",
@@ -210,7 +217,7 @@
               <button class="button primary" data-go="${primary.hash}">${primary.label}<span>→</span></button>
               <a class="button ghost" href="#course-map">Explore the modules</a>
             </div>
-            <div class="hero-facts"><div><strong>10</strong><span>learning modules</span></div><div><strong>16</strong><span>taught segments</span></div><div><strong>80%</strong><span>mastery threshold</span></div></div>
+            <div class="hero-facts"><div><strong>10</strong><span>learning modules</span></div><div><strong>5</strong><span>instructor videos</span></div><div><strong>80%</strong><span>mastery threshold</span></div></div>
           </div>
           <div class="hero-system" aria-label="Course reasoning system">
             <div class="system-label">Your reasoning loop</div>
@@ -236,7 +243,7 @@
             ${DATA.modules.map(module => `<article class="module-tile phase-${module.phase.toLowerCase()}">
               <div class="tile-top"><span>Module ${String(module.id).padStart(2,"0")}</span><i>${module.weeks}</i></div>
               <h3>${esc(module.title)}</h3><p>${esc(module.purpose)}</p>
-              <div class="tile-foot"><span>${module.lessons.length} learning segment${module.lessons.length > 1 ? "s" : ""} · ${module.labs.length} evidence lab${module.labs.length > 1 ? "s" : ""}</span><button data-module="${module.id}" aria-label="Open ${esc(module.title)}">↗</button></div>
+              <div class="tile-foot"><span>${module.lessons.length} learning segment${module.lessons.length > 1 ? "s" : ""} · ${module.labs.length} evidence lab${module.labs.length > 1 ? "s" : ""}${MODULE_VIDEOS[module.id] ? " · Instructor video" : ""}</span><button data-module="${module.id}" aria-label="Open ${esc(module.title)}">↗</button></div>
             </article>`).join("")}
           </div>
         </section>
@@ -352,13 +359,14 @@
           <a href="#/path" class="back-path">← My learning path</a>
           <div class="module-index">Module ${String(module.id).padStart(2,"0")}</div><h2>${esc(module.title)}</h2><p>${module.weeks} · ${module.phase} phase</p>
           <div class="prescription-badge ${p.key}"><strong>${p.label}</strong><span>${esc(p.detail)}</span></div>
-          <nav><button data-scroll="overview">Overview + pacing</button>${module.lessons.map((l,i)=>`<button data-study="${module.id}:${i}"><span class="check-dot ${lessonRecord(module.id,i).done ? "done" : ""}"></span>Visual lesson ${i+1}</button>`).join("")}<button data-scroll="lab"><span class="check-dot ${labsComplete(module) ? "done" : ""}"></span>Evidence lab</button><button data-scroll="gate"><span class="check-dot ${passed ? "done" : ""}"></span>Competency gate</button></nav>
+          <nav><button data-scroll="overview">Overview + pacing</button>${MODULE_VIDEOS[module.id]?`<button data-scroll="instructor-video"><span class="video-dot">▶</span>Instructor video</button>`:""}${module.lessons.map((l,i)=>`<button data-study="${module.id}:${i}"><span class="check-dot ${lessonRecord(module.id,i).done ? "done" : ""}"></span>Visual lesson ${i+1}</button>`).join("")}<button data-scroll="lab"><span class="check-dot ${labsComplete(module) ? "done" : ""}"></span>Evidence lab</button><button data-scroll="gate"><span class="check-dot ${passed ? "done" : ""}"></span>Competency gate</button></nav>
         </aside>
         <section class="module-content">
           <section class="module-banner" id="overview"><div><span>${module.phase.toUpperCase()} · ${module.weeks} · ${module.learning.time}</span><h1>${esc(module.title)}</h1><p>${esc(module.purpose)}</p><div class="concept-strip">${module.learning.concepts.map(item=>`<i>${esc(item)}</i>`).join("")}</div></div><div class="module-status-ring ${passed ? "passed" : ""}"><strong>${passed ? "✓" : module.id}</strong><span>${passed ? "Mastered" : "In progress"}</span></div></section>
           ${adjustmentFor(module.id)?`<section class="instructor-note"><span>MESSAGE FROM YOUR INSTRUCTOR</span><div><strong>${esc(p.label)}</strong><p>${esc(p.detail)}</p></div></section>`:""}
           <section class="outcomes-block"><span class="content-kicker">By the end, you can…</span><div>${module.outcomes.map((outcome,i)=>`<article><span>0${i+1}</span><p>${esc(outcome)}</p></article>`).join("")}</div></section>
           <section class="pacing-plan"><div><span class="content-kicker">Recommended pace</span><h2>Follow these stops in order.</h2><p>Each numbered row is one study sitting. Complete it, stop, and return on another day when possible. Spacing is part of the learning design.</p></div><ol>${module.learning.sessions.map((item,index)=>`<li class="${sessionDone(module,index)?"done":""}"><b>0${index+1}</b><span>${esc(item)}</span><i>${sessionDone(module,index)?"✓ Done":"Stop here"}</i></li>`).join("")}</ol></section>
+          ${moduleVideoBlock(module)}
           ${module.lessons.map((lesson,index) => lectureBlock(module, lesson, index, lessonRecord(module.id,index))).join("")}
           <section class="lab-section" id="lab"><div class="section-title"><div><span class="content-kicker">Investigate with evidence</span><h2>Substantive lab work</h2></div><p>${module.labs.length} lab${module.labs.length>1?"s":""} · data, analysis, and decision required</p></div>
             ${module.labs.map((lab,index)=>labBlock(module, lab, index, ms.labs[index])).join("")}
@@ -371,6 +379,16 @@
 
   function lessonReady(lesson, record) {
     return lesson.checkpoint.every((item, qIndex) => record.answers[qIndex] === item.a) && record.explanation.trim().length >= 80;
+  }
+
+  function moduleVideoBlock(module) {
+    const video = MODULE_VIDEOS[module.id];
+    if (!video) return "";
+    return `<section class="instructor-video" id="instructor-video">
+      <div class="instructor-video-heading"><div><span class="content-kicker">Instructor video · ${video.duration}</span><h2>Watch the module explanation</h2><p>Use this recorded lecture as your first orientation, then move into the learner-controlled visual lesson where you will practice the reasoning yourself.</p></div><div class="video-sequence"><span>WATCH</span><i>→</i><span>NOTICE</span><i>→</i><span>APPLY</span></div></div>
+      <div class="instructor-video-frame"><video controls preload="metadata" playsinline poster="${video.poster}" data-module-video="${module.id}" aria-label="Instructor video for Module ${module.id}: ${esc(module.title)}"><source src="${video.src}" type="video/mp4">Your browser cannot play this video. <a href="${video.src}">Open the video file directly.</a></video></div>
+      <div class="video-learning-guide"><article><b>Before watching</b><p>Read the module outcomes above and choose one idea you most need the video to clarify.</p></article><article><b>While watching</b><p>${esc(video.focus)} Pause and write one example from physical education, coaching, or training.</p></article><article><b>After watching</b><p>Without replaying, state the central principle and one decision it should change. Then begin Visual lesson 1.</p></article></div>
+    </section>`;
   }
 
   function lessonSlides(module, lesson) {
@@ -499,6 +517,11 @@
     app.querySelectorAll("[data-go]").forEach(el=>el.addEventListener("click",()=>go(el.dataset.go)));
     app.querySelectorAll("[data-module]").forEach(el=>el.addEventListener("click",()=>go(`#/module/${el.dataset.module}`)));
     app.querySelectorAll("[data-study]").forEach(el=>el.addEventListener("click",()=>{const [m,i]=el.dataset.study.split(":");track("visual_lesson_opened",{module:Number(m),lesson:Number(i)});save();go(`#/study/${m}/${i}`);}));
+    app.querySelectorAll("[data-module-video]").forEach(el=>{
+      const moduleId=Number(el.dataset.moduleVideo);
+      el.addEventListener("play",()=>{if(!el.dataset.playTracked){el.dataset.playTracked="true";track("instructor_video_started",{module:moduleId});save();}});
+      el.addEventListener("ended",()=>{track("instructor_video_completed",{module:moduleId});save();});
+    });
     app.querySelectorAll("[data-next-action]").forEach(el=>el.addEventListener("click",()=>{const target=el.dataset.nextAction;const anchor=el.dataset.anchor;track("next_action_started",{target,anchor});save();go(target);if(anchor)setTimeout(()=>document.getElementById(anchor)?.scrollIntoView({behavior:"smooth"}),120);}));
     app.querySelectorAll("[data-slide]").forEach(el=>el.addEventListener("click",()=>{const player=app.querySelector("[data-study-player]");if(!player)return;const [m,i]=player.dataset.studyPlayer.split(":");const record=lessonRecord(m,i);record.mediaSlide=Number(el.dataset.slide);track("visual_chapter_viewed",{module:Number(m),lesson:Number(i),chapter:record.mediaSlide});save();render();window.scrollTo({top:0,behavior:"smooth"});}));
     app.querySelectorAll("[data-narrate]").forEach(el=>el.addEventListener("click",()=>{if(!("speechSynthesis" in window))return;window.speechSynthesis.cancel();const utterance=new SpeechSynthesisUtterance(el.dataset.narrate);utterance.rate=.96;utterance.pitch=1;utterance.onstart=()=>{el.classList.add("playing");el.querySelector("span").textContent="■";};utterance.onend=()=>{el.classList.remove("playing");el.querySelector("span").textContent="▶";};window.speechSynthesis.speak(utterance);track("narration_played",{});save();}));
