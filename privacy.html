@@ -1,180 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Privacy Policy – Movemetric</title>
-<meta name="description" content="Privacy policy for the Movemetric suite of tools, including ClassMetrics, ClassMetrics HR, FitAI, FieldTracker, PracticeSphere, and Reference Freshness Checker."/>
+<meta name="description" content="How Movemetric handles data across ClassMetrics HR, CoachSAGE, Basal, FieldTracker and the rest of the suite."/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap" rel="stylesheet"/>
-<style>
-  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-  :root{
-    --bg:#080E1A;
-    --bg2:#0D1628;
-    --bg3:#122040;
-    --card:#0F1B30;
-    --card-hover:#152238;
-    --green:#22C55E;
-    --green-dim:rgba(34,197,94,0.12);
-    --green-glow:rgba(34,197,94,0.25);
-    --teal:#06B6D4;
-    --teal-dim:rgba(6,182,212,0.12);
-    --orange:#F97316;
-    --orange-dim:rgba(249,115,22,0.12);
-    --purple:#8B5CF6;
-    --purple-dim:rgba(139,92,246,0.12);
-    --blue:#0EA5E9;
-    --blue-dim:rgba(14,165,233,0.12);
-    --white:#F1F7FF;
-    --muted:#7A90B0;
-    --border:rgba(255,255,255,0.07);
-    --radius:16px;
-    --font:'DM Sans',sans-serif;
-  }
-  html{scroll-behavior:smooth;font-size:16px}
-  body{background:var(--bg);color:var(--white);font-family:var(--font);-webkit-font-smoothing:antialiased;overflow-x:hidden;line-height:1.7}
-  ::selection{background:var(--green-dim);color:var(--green)}
-  a{color:var(--green);text-decoration:none;transition:opacity .2s}
-  a:hover{opacity:.8}
-  img{max-width:100%;display:block}
-  button{font-family:var(--font);cursor:pointer;border:none;outline:none}
-
-  ::-webkit-scrollbar{width:6px}
-  ::-webkit-scrollbar-track{background:var(--bg)}
-  ::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:99px}
-
-  /* Nav */
-  nav{
-    position:fixed;top:0;left:0;right:0;z-index:100;
-    padding:0 5%;height:68px;
-    display:flex;align-items:center;justify-content:space-between;
-    background:rgba(8,14,26,0.92);
-    backdrop-filter:blur(16px);
-    border-bottom:1px solid var(--border);
-  }
-  .nav-logo{display:flex;align-items:center;gap:10px}
-  .nav-logo-img{height:32px;width:32px;border-radius:8px;background:var(--green-dim);display:flex;align-items:center;justify-content:center}
-  .nav-logo-img svg{width:20px;height:20px}
-  .nav-logo span{font-size:1.1rem;font-weight:700;letter-spacing:-.02em;color:var(--white)}
-  .nav-logo .sep{color:var(--muted);font-weight:400;margin:0 4px}
-  .nav-back{font-size:.875rem;font-weight:500;color:var(--muted);padding:8px 18px;border-radius:99px;border:1px solid var(--border);transition:all .2s}
-  .nav-back:hover{color:var(--white);border-color:rgba(255,255,255,.15)}
-
-  /* Layout */
-  .page{max-width:800px;margin:0 auto;padding:108px 5% 80px}
-
-  /* Hero */
-  .hero{margin-bottom:56px}
-  .hero-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--green);background:var(--green-dim);padding:5px 12px;border-radius:6px;border:1px solid rgba(34,197,94,.18);margin-bottom:1.25rem}
-  .hero h1{font-size:clamp(2rem,4vw,2.8rem);font-weight:800;line-height:1.1;letter-spacing:-.03em;margin-bottom:.75rem}
-  .hero .updated{font-size:.85rem;color:var(--muted);margin-bottom:1.25rem}
-  .hero .lead{font-size:1.05rem;color:var(--muted);line-height:1.75;max-width:640px}
-
-  /* TOC */
-  .toc{
-    background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
-    padding:24px 28px;margin-bottom:56px;
-  }
-  .toc h2{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
-  .toc ol{padding-left:1.25rem;display:flex;flex-direction:column;gap:6px}
-  .toc li{font-size:.9rem}
-  .toc a{color:var(--muted)}
-  .toc a:hover{color:var(--white)}
-
-  /* Sections */
-  .section{margin-bottom:56px;scroll-margin-top:88px}
-  .section-header{display:flex;align-items:center;gap:12px;margin-bottom:1.25rem}
-  .section-num{font-size:.72rem;font-weight:700;letter-spacing:.08em;color:var(--muted)}
-  .section h2{font-size:1.45rem;font-weight:800;letter-spacing:-.02em}
-  .section p{color:var(--muted);margin-bottom:.9rem}
-  .section p:last-child{margin-bottom:0}
-  .section ul,.section ol{padding-left:1.4rem;color:var(--muted);display:flex;flex-direction:column;gap:.45rem;margin-bottom:.9rem}
-  .section li{font-size:.95rem}
-  .section strong{color:var(--white);font-weight:600}
-
-  /* Divider */
-  hr{border:none;border-top:1px solid var(--border);margin:0 0 56px}
-
-  /* Tool cards */
-  .tool-grid{display:flex;flex-direction:column;gap:20px;margin-top:8px}
-  .tool-card{
-    background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
-    padding:24px;
-  }
-  .tool-card-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
-  .tool-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-  .tool-card h3{font-size:1rem;font-weight:700;letter-spacing:-.01em}
-  .tool-card .tool-tag{font-size:.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-left:auto}
-  .tool-card p{color:var(--muted);font-size:.9rem;margin-bottom:.65rem}
-  .tool-card p:last-child{margin-bottom:0}
-  .tool-card ul{padding-left:1.2rem;color:var(--muted);font-size:.9rem;display:flex;flex-direction:column;gap:.35rem}
-
-  /* Callout */
-  .callout{
-    background:var(--green-dim);border:1px solid rgba(34,197,94,.2);border-radius:12px;
-    padding:18px 22px;margin:20px 0;
-  }
-  .callout p{color:var(--white);font-size:.9rem;margin:0}
-  .callout strong{color:var(--green)}
-
-  .callout-blue{background:var(--blue-dim);border-color:rgba(14,165,233,.2)}
-  .callout-blue p{color:var(--white)}
-  .callout-blue strong{color:var(--blue)}
-
-  /* Contact */
-  .contact-card{
-    background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
-    padding:28px;display:flex;flex-direction:column;gap:6px;
-  }
-  .contact-card h3{font-size:1rem;font-weight:700;margin-bottom:6px}
-  .contact-card p{color:var(--muted);font-size:.9rem}
-
-  /* Footer */
-  footer{
-    border-top:1px solid var(--border);
-    padding:32px 5%;
-    display:flex;align-items:center;justify-content:space-between;gap:1.5rem;
-    flex-wrap:wrap;
-  }
-  .ft-brand{font-size:.85rem;font-weight:600;color:var(--muted)}
-  .ft-links{display:flex;gap:1.5rem;flex-wrap:wrap}
-  .ft-links a{font-size:.85rem;color:var(--muted);transition:color .2s}
-  .ft-links a:hover{color:var(--white)}
-
-  @media(max-width:640px){
-    .page{padding:96px 5% 60px}
-    .toc{padding:20px}
-    .tool-card{padding:18px}
-    footer{flex-direction:column;align-items:flex-start}
-  }
-</style>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="site.css"/>
 </head>
 <body>
-
-<!-- Nav -->
-<nav>
-  <a href="index.html" class="nav-logo">
-    <div class="nav-logo-img">
-      <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M4 14l4-5 3 3 3-4 2 3" stroke="#22C55E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        <circle cx="10" cy="10" r="8.5" stroke="#22C55E" stroke-width="1.2" opacity=".35"/>
-      </svg>
+<header class="site-head">
+  <div class="wrap">
+    <div class="head-left">
+      <a class="mm-brand" href="index.html"><span class="mm-dot" aria-hidden="true"></span><span>move<b>metric</b></span></a>
+      <span class="page-tag"><span>Movemetric</span><strong>Privacy</strong></span>
     </div>
-    <span>Movemetric<span class="sep">/</span>Privacy</span>
-  </a>
-  <a href="index.html" class="nav-back">← Back to Suite</a>
-</nav>
-
-<!-- Main content -->
+    <nav class="nav-links">
+      <a href="index.html#products">Products</a>
+      <a href="index.html#approach">Approach</a>
+      <a href="PETE345/">PETE 345</a>
+      <a href="support.html">Support</a>
+      <a href="index.html#contact">Contact</a>
+    </nav>
+  </div>
+</header>
 <main class="page">
 
   <!-- Hero -->
   <div class="hero">
     <div class="hero-eyebrow">Privacy Policy</div>
     <h1>Your data, explained clearly.</h1>
-    <p class="updated">Last updated: August 2025</p>
+    <p class="updated">Last updated: September 2026</p>
     <p class="lead">This Privacy Policy describes how Movemetric collects, uses, and protects information across all products in the Movemetric suite. We are committed to protecting the privacy of students, educators, and institutions who use our tools.</p>
   </div>
 
@@ -205,6 +63,8 @@
     <ul>
       <li><strong>ClassMetrics</strong> — Fitness assessment and roster management</li>
       <li><strong>ClassMetrics HR</strong> — Heart-rate monitoring and MVPA documentation</li>
+      <li><strong>CoachSAGE</strong> — Video movement analysis for coaches and PE teachers</li>
+      <li><strong>Basal</strong> — Adaptive macro and energy tracking</li>
       <li><strong>FitAI</strong> — AI-powered wellness coaching</li>
       <li><strong>FieldTracker</strong> — Field experience management for teacher education programs</li>
       <li><strong>PracticeSphere</strong> — Practice planning and team management for PE programs</li>
@@ -257,7 +117,44 @@
           <li>Class period timestamps and MVPA duration calculations</li>
           <li>Instructional reports summarizing zone distribution across a class</li>
         </ul>
-        <p>Heart-rate data is considered sensitive health information. Movemetric does not transmit or store raw heart-rate data on external servers beyond what is necessary to display session reports within the tool. Instructors are responsible for complying with their institution's health data policies when using this feature.</p>
+        <p>Heart-rate data is sensitive health information. Readings are captured and calculated on the iPad. When an instructor signs in, a snapshot of classes, students and sessions is synced to that instructor's own account in Google Firebase (Firestore), so the same classes appear on a second iPad and survive a lost device. Signing in is optional: signed out, nothing leaves the iPad.</p>
+        <p>Instructors are responsible for complying with their institution's policies on student health data, and can reduce what is held by entering initials or student numbers instead of full names. Full details, including how to delete synced data, are on the <a href="classmetrics-hr.html">ClassMetrics HR page</a>.</p>
+      </div>
+
+      <!-- CoachSAGE -->
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-dot" style="background:#22C55E"></div>
+          <h3>CoachSAGE</h3>
+          <span class="tool-tag">Video Analysis</span>
+        </div>
+        <p>CoachSAGE records or imports a clip, plays it frame by frame, and can return AI feedback on a movement. Data handled may include:</p>
+        <ul>
+          <li>Video recorded or imported by the user, written into the app's own storage on the device</li>
+          <li>Annotations, notes and exported stills created from a clip</li>
+          <li>Six to eight still frames, sent to our analysis service only when the user requests feedback, and not retained afterwards</li>
+          <li>A device identifier generated by us and held in the device keychain, used to count free analyses</li>
+        </ul>
+        <p>Video is never uploaded and never stored by Movemetric. There are no accounts and no sync. Subscription status comes from Apple; payment details are never visible to us. Full details are on the <a href="coachsage.html">CoachSAGE page</a>.</p>
+        <div class="callout">
+          <p><strong>Note:</strong> this app is often pointed at students. Users are responsible for having permission to record under their school's policy, and for how exported stills are shared.</p>
+        </div>
+      </div>
+
+      <!-- Basal -->
+      <div class="tool-card">
+        <div class="tool-card-header">
+          <div class="tool-dot" style="background:#0EA5E9"></div>
+          <h3>Basal</h3>
+          <span class="tool-tag">Macro Tracking</span>
+        </div>
+        <p>Basal is a personal macro tracker that adjusts its targets against a user's own intake and weight over time. Data handled may include:</p>
+        <ul>
+          <li>Apple Health data read with permission: weight, height, steps, workouts, energy burned and heart rate</li>
+          <li>Meals, weights and targets logged in the app, held on the device</li>
+          <li>The text of a meal description, sent to our parsing service to be converted into calories and macros</li>
+        </ul>
+        <p>Health data is read and used on the device. It is never used for advertising, never sold, never shared, and never sent to the parsing service or to an AI provider. There are no accounts. Full details are on the <a href="basal.html">Basal page</a>.</p>
       </div>
 
       <!-- FitAI -->
@@ -414,7 +311,7 @@
       <li>Regular security reviews and vulnerability assessments</li>
       <li>Secure session management and authentication practices</li>
     </ul>
-    <p>While we take security seriously, no system is completely secure. We encourage users to use strong passwords and to report any suspected unauthorized access to <a href="mailto:contact@movemetric.com">contact@movemetric.com</a>.</p>
+    <p>While we take security seriously, no system is completely secure. We encourage users to use strong passwords and to report any suspected unauthorized access to <a href="mailto:support@movemetric.org">support@movemetric.org</a>.</p>
     <p><strong>Data Retention:</strong> We retain user account data and user-entered content for as long as your account is active or as needed to provide services. Upon account deletion or institutional contract termination, we will delete or anonymize data within a reasonable period, except where retention is required by law.</p>
   </section>
 
@@ -432,13 +329,13 @@
     <p>Institutions are responsible for determining whether their use of Movemetric tools is consistent with their FERPA obligations. Movemetric does not access, use, or disclose student education records except as authorized by the institution or required by law.</p>
 
     <div class="callout callout-blue">
-      <p><strong>Institutions:</strong> If you require a FERPA data processing agreement or have questions about our FERPA practices, contact us at <a href="mailto:contact@movemetric.com" style="color:var(--blue)">contact@movemetric.com</a>.</p>
+      <p><strong>Institutions:</strong> If you require a FERPA data processing agreement or have questions about our FERPA practices, contact us at <a href="mailto:support@movemetric.org" style="color:var(--blue)">support@movemetric.org</a>.</p>
     </div>
 
     <p style="margin-top:1.25rem"><strong>COPPA (Children's Online Privacy Protection Act)</strong></p>
     <p>Movemetric products are not directed to children under 13 for independent use. Our tools are designed for use by educators and program administrators, who are responsible for managing any data related to students in their care.</p>
     <p>Movemetric does not knowingly collect personal information directly from children under 13. If a school or educator enters data about students under 13 into a Movemetric tool, the educator acts as the responsible party, and such data is handled under the school's authority consistent with COPPA's school official exception.</p>
-    <p>If you believe we have inadvertently collected personal information from a child under 13, please contact us immediately at <a href="mailto:contact@movemetric.com">contact@movemetric.com</a> and we will take prompt action to remove it.</p>
+    <p>If you believe we have inadvertently collected personal information from a child under 13, please contact us immediately at <a href="mailto:support@movemetric.org">support@movemetric.org</a> and we will take prompt action to remove it.</p>
   </section>
 
   <hr/>
@@ -458,7 +355,7 @@
       <li><strong>Opt-out:</strong> Opt out of non-essential communications at any time by following unsubscribe instructions in any email.</li>
     </ul>
     <p>For student data governed by FERPA, rights of access and correction belong to the student (or parent/guardian if the student is under 18) and must be exercised through the educational institution.</p>
-    <p>To exercise any of these rights, contact us at <a href="mailto:contact@movemetric.com">contact@movemetric.com</a>. We will respond within 30 days.</p>
+    <p>To exercise any of these rights, contact us at <a href="mailto:support@movemetric.org">support@movemetric.org</a>. We will respond within 30 days.</p>
   </section>
 
   <hr/>
@@ -484,23 +381,46 @@
     <p>If you have questions, concerns, or requests related to this Privacy Policy or your data, please reach out:</p>
     <div class="contact-card">
       <h3>Movemetric Privacy</h3>
-      <p>Email: <a href="mailto:contact@movemetric.com">contact@movemetric.com</a></p>
+      <p>Email: <a href="mailto:support@movemetric.org">support@movemetric.org</a></p>
       <p>Website: <a href="https://movemetric.org">movemetric.org</a></p>
       <p style="margin-top:8px;font-size:.85rem">For FERPA-related inquiries or data processing agreements, please include "FERPA Request" in your email subject line.</p>
     </div>
   </section>
 
 </main>
-
-<!-- Footer -->
-<footer>
-  <span class="ft-brand">© 2025 Movemetric</span>
-  <nav class="ft-links" aria-label="Footer links">
-    <a href="index.html">Suite Home</a>
-    <a href="index.html#contact">Contact</a>
-    <a href="mailto:contact@movemetric.com">Support</a>
-    <a href="privacy.html" style="color:var(--white)">Privacy Policy</a>
-  </nav>
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="about">
+        <a class="mm-brand" href="index.html"><span class="mm-dot" aria-hidden="true"></span><span>move<b>metric</b></span></a>
+        <p>Software for physical education teaching and teacher education, built by an educator who uses it.</p>
+      </div>
+      <div>
+        <h4>Products</h4>
+        <a href="classmetrics-hr.html">ClassMetrics HR</a>
+        <a href="coachsage.html">CoachSAGE</a>
+        <a href="basal.html">Basal</a>
+        <a href="field-tracker.html">FieldTracker</a>
+      </div>
+      <div>
+        <h4>Also here</h4>
+        <a href="tools.html">Other work</a>
+        <a href="PETE345/">PETE 345 Learning Lab</a>
+        <a href="ref-freshness.html">Reference Freshness</a>
+      </div>
+      <div>
+        <h4>Help</h4>
+        <a href="support.html">Support</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+        <a href="mailto:support@movemetric.org">Email us</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>&copy; 2026 Movemetric</span>
+      <span>Educational use only. Not medical devices.</span>
+    </div>
+  </div>
 </footer>
 
 </body>
