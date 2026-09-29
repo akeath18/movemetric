@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Request an app or feature | Movemetric</title>
+<meta name="description" content="PE teachers: ask Movemetric for a new app, or a feature in ClassMetrics HR, CoachSAGE, FieldTracker, or Basal."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="site.css"/>
+</head>
+<body>
+<header class="site-head">
+  <div class="wrap">
+    <div class="head-left">
+      <a class="mm-brand" href="index.html"><span class="mm-dot" aria-hidden="true"></span><span>move<b>metric</b></span></a>
+      <span class="page-tag"><span>Movemetric</span><strong>Requests</strong></span>
+    </div>
+    <nav class="nav-links">
+      <a href="index.html#apps">Apps</a>
+      <a href="index.html#why">Why Movemetric</a>
+      <a href="support.html">Support</a>
+      <a href="index.html#contact">Contact</a>
+      <a class="nav-cta" href="request.html">Request an app</a>
+    </nav>
+  </div>
+</header>
+<main>
+
+<section class="hero band">
+  <div class="wrap" style="max-width:var(--maxw)">
+    <span class="label">Requests</span>
+    <h1>Tell us what would help in <em>your gym.</em></h1>
+    <p class="lead">Ask for a brand new app, or a feature in one you already use. Requests from teachers decide what gets built next.</p>
+  </div>
+</section>
+
+<section class="band band-soft">
+  <div class="wrap request-grid">
+    <div class="form-frame" id="request-form">
+      <!-- Paste the Google Form's embed link between the quotes below.
+           In Google Forms: Send > the < > tab > copy the src="..." value.
+           It ends in /viewform?embedded=true -->
+      <div data-form-src=""></div>
+      <div class="form-fallback" id="form-fallback">
+        <h3>Send your request by email</h3>
+        <p>Tell us what you teach, which app it is for (or that it is a new idea), and the problem you want solved. A sentence or two is plenty.</p>
+        <a class="btn btn-primary" href="mailto:support@movemetric.org?subject=App%20or%20feature%20request">Email a request</a>
+      </div>
+    </div>
+
+    <aside class="aside">
+      <div class="contact-box">
+        <h3>What happens next</h3>
+        <ol class="steps">
+          <li>Your request is read by the person who builds the apps.</li>
+          <li>Similar requests are grouped, so every vote for an idea counts.</li>
+          <li>If you leave an email, you will hear back when there is news on your idea.</li>
+        </ol>
+      </div>
+      <div class="contact-box">
+        <h3>What makes a request useful</h3>
+        <ul>
+          <li>The problem, more than the solution</li>
+          <li>Grade levels and class size</li>
+          <li>What you use today, even if it is paper</li>
+        </ul>
+      </div>
+      <div class="contact-box">
+        <h3>Something broken?</h3>
+        <p>Bug reports go faster by email. See <a href="support.html" style="color:var(--brand);font-weight:700">Support</a> for what to include.</p>
+      </div>
+    </aside>
+  </div>
+</section>
+
+</main>
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="about">
+        <a class="mm-brand" href="index.html"><span class="mm-dot" aria-hidden="true"></span><span>move<b>metric</b></span></a>
+        <p>Apps for physical education teachers, built by a PE teacher educator who uses them.</p>
+      </div>
+      <div>
+        <h4>Apps</h4>
+        <a href="classmetrics-hr.html">ClassMetrics HR</a>
+        <a href="coachsage.html">CoachSAGE</a>
+        <a href="field-tracker.html">FieldTracker</a>
+        <a href="basal.html">Basal</a>
+      </div>
+      <div>
+        <h4>Also here</h4>
+        <a href="tools.html">Other work</a>
+        <a href="PETE345/">PETE 345 Learning Lab</a>
+        <a href="ref-freshness.html">Reference Freshness</a>
+      </div>
+      <div>
+        <h4>Help</h4>
+        <a href="request.html">Request an app or feature</a>
+        <a href="support.html">Support</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>&copy; 2026 Movemetric</span>
+      <span>Educational use only. Not medical devices.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Swap the email fallback for the embedded Google Form once a link is set.
+  (function () {
+    var slot = document.querySelector('[data-form-src]');
+    var src = slot && slot.getAttribute('data-form-src');
+    if (!src) return;
+    var frame = document.createElement('iframe');
+    frame.src = src;
+    frame.title = 'App and feature request form';
+    frame.loading = 'lazy';
+    slot.replaceWith(frame);
+    document.getElementById('form-fallback').hidden = true;
+  })();
+</script>
+</body>
+</html>
