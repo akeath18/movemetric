@@ -3,155 +3,179 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Movemetric — Software for physical education</title>
-<meta name="description" content="Movemetric builds focused software for physical education teaching and teacher education: heart-rate monitoring, video analysis and field experience management."/>
+<title>Movemetric | Technology for PE teachers</title>
+<meta name="description" content="Movemetric builds apps that support physical education teachers: live heart rate for a whole class, frame-accurate video feedback, and tools teachers ask for."/>
+<link rel="icon" href="assets/logo-tile.svg" type="image/svg+xml"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="site.css"/>
+<script>document.documentElement.classList.add('js')</script>
 </head>
 <body>
 <header class="site-head">
   <div class="wrap">
     <div class="head-left">
-      <a class="mm-brand" href="index.html"><span class="mm-dot" aria-hidden="true"></span><span>move<b>metric</b></span></a>
+      <a class="mm-brand" href="index.html" aria-label="Movemetric home"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="23" width="4.5" height="8" rx="1" fill="#5B8CFF"/><rect x="7.5" y="19" width="4.5" height="12" rx="1" fill="#2FC6A0"/><rect x="14" y="14" width="4.5" height="17" rx="1" fill="#F2C230"/><rect x="20.5" y="8" width="4.5" height="23" rx="1" fill="#FF8A3D"/><rect x="27" y="1" width="4.5" height="30" rx="1" fill="#E4572E"/></svg><span class="wm">move<b>metric</b></span></a>
     </div>
     <nav class="nav-links">
-      <a href="index.html#products">Products</a>
+      <a href="index.html#apps">Apps</a>
       <a href="index.html#approach">Approach</a>
-      <a href="PETE345/">PETE 345</a>
       <a href="support.html">Support</a>
-      <a href="index.html#contact">Contact</a>
+      <a class="btn btn-sm" href="request.html">Request an app</a>
     </nav>
   </div>
 </header>
 <main>
 
-<section class="hero band">
+<section class="hero">
   <div class="wrap">
-    <span class="label">Physical education software</span>
-    <h1>Measure what <em>actually happens</em> in a gym.</h1>
-    <p class="lead">A small number of tools for physical education teachers and teacher education programs. Each one does a single job, records real data, and hands it back in a form a school can use.</p>
-    <div class="hero-actions">
-      <a class="btn btn-primary" href="#products">See the products</a>
-      <a class="btn" href="#contact">Start a pilot</a>
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="live-dot" aria-hidden="true"></span>For physical education teachers</div>
+        <h1 class="display display-xl"><span class="w" style="--i:0">Technology</span> <span class="w" style="--i:1">that</span> <span class="w" style="--i:2">supports</span> <span class="w em" style="--i:3">PE</span> <span class="w em" style="--i:4">teachers.</span></h1>
+        <p class="lead">Apps for the gym, built by a physical education teacher educator. See every student's effort live, give feedback on real movement, and hand back data a school can use.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#apps">See the apps <span aria-hidden="true">→</span></a>
+          <a class="btn btn-text" href="request.html">Request an app or feature</a>
+        </div>
+      </div>
+      <div class="device">
+        <img src="media/chr-live-tiles.jpg" width="1500" height="2000" alt="ClassMetrics HR on an iPad, showing twelve students as heart-rate zone tiles during a warm-up"/>
+      </div>
+    </div>
+  </div>
+  <div class="wrap" style="padding-bottom:72px">
+    <div class="stats">
+      <div class="stat"><div class="v">4</div><div class="l">apps, each with a job</div></div>
+      <div class="stat"><div class="v">0</div><div class="l">analytics libraries or ad identifiers</div></div>
+      <div class="stat"><div class="v">1</div><div class="l">iPad for a whole class</div></div>
     </div>
   </div>
 </section>
 
-<section class="band band-paper" id="products">
+<section class="band" id="apps">
   <div class="wrap">
-    <div class="band-head">
-      <span class="label">Products</span>
-      <h2>Four tools, each with a job.</h2>
+    <div class="band-head reveal">
+      <div class="eyebrow">Apps</div>
+      <h2>Four tools, <span class="em">each with a job.</span></h2>
     </div>
-    <div class="rows">
-    <div class="row acc-teal">
-      <div class="rname">
-        <h3><a href="classmetrics-hr.html">ClassMetrics HR</a></h3>
-        <span class="plat">iPad</span>
-      </div>
-      <div>
-        <p>Live heart-rate monitoring for a whole class on one iPad. Standard Bluetooth chest and wrist straps stream to on-screen zone colors in real time, and a session turns into a defensible record of time spent in moderate to vigorous activity — synced to a teacher's own account when they sign in, private on the iPad otherwise.</p>
-        <ul><li>Live zone view</li><li>MVPA totals</li><li>Roster import</li><li>CSV export</li></ul>
-      </div>
-      <div><span class="status soon">In development</span></div>
-      <a class="arrow" href="classmetrics-hr.html" aria-label="Open the ClassMetrics HR page">&rarr;</a>
+    <div class="products">
+      <a class="pcard pc-cm reveal" style="--i:0" href="classmetrics-hr.html">
+        <div class="pcard-top"><span class="pmark">CM</span><span class="plat">iPad</span></div>
+        <h3>ClassMetrics HR</h3>
+        <p>Live heart-rate monitoring for a whole class on one iPad. Standard Bluetooth chest and wrist straps stream to on-screen zone colors in real time, and a lesson turns into a record of time in moderate to vigorous activity.</p>
+        <div class="tags"><span class="tag">Live zone view</span><span class="tag">MVPA totals</span><span class="tag">Roster import</span><span class="tag">CSV export</span></div>
+        <div class="pcard-foot"><span><span class="dot"></span>In development</span><span class="go">→</span></div>
+      </a>
+      <a class="pcard pc-cs reveal" style="--i:1" href="coachsage.html">
+        <div class="pcard-top"><span class="pmark">CS</span><span class="plat">iPhone and iPad</span></div>
+        <h3>CoachSAGE</h3>
+        <p>A frame-accurate video analysis app for PE teachers and coaches, built as a successor to Coach's Eye. Step through a clip, draw on the movement, and compare two attempts side by side.</p>
+        <div class="tags"><span class="tag">Frame-accurate scrubbing</span><span class="tag">Telestration</span><span class="tag">Side by side</span></div>
+        <div class="pcard-foot"><span><span class="dot"></span>Preparing for release</span><span class="go">→</span></div>
+      </a>
+      <a class="pcard pc-ba reveal" style="--i:2" href="basal.html">
+        <div class="pcard-top"><span class="pmark">Ba</span><span class="plat">iPhone</span></div>
+        <h3>Basal</h3>
+        <p>An adaptive macro tracker. Describe a meal in plain language and AI turns it into calories and macros, then your targets adjust against your actual weight trend.</p>
+        <div class="tags"><span class="tag">Plain-language logging</span><span class="tag">Adaptive targets</span><span class="tag">Apple Health</span></div>
+        <div class="pcard-foot"><span><span class="dot"></span>Preparing for release</span><span class="go">→</span></div>
+      </a>
+      <a class="pcard pc-ft reveal" style="--i:3" href="field-tracker.html">
+        <div class="pcard-top"><span class="pmark">FT</span><span class="plat">Web</span></div>
+        <h3>FieldTracker</h3>
+        <p>Field experience management for PE teacher education programs. Placements, hour logs, supervisor sign-off and accreditation reporting in one place.</p>
+        <div class="tags"><span class="tag">Three roles</span><span class="tag">Rubric assessment</span><span class="tag">Canvas integration</span></div>
+        <div class="pcard-foot"><span><span class="dot"></span>Live</span><span class="go">→</span></div>
+      </a>
     </div>
-    <div class="row acc-orange">
-      <div class="rname">
-        <h3><a href="coachsage.html">CoachSAGE</a></h3>
-        <span class="plat">iPhone and iPad</span>
+  </div>
+</section>
+
+<section class="band" id="classmetrics">
+  <div class="wrap">
+    <div class="spot">
+      <div class="spot-copy reveal">
+        <div class="eyebrow">Inside ClassMetrics HR</div>
+        <h2>Every student's effort, <span class="em">at a glance.</span></h2>
+        <p>Strap up the class and press start. The iPad keeps count, so you can keep teaching.</p>
+        <ul class="checks">
+          <li>A whole class on one screen, colored by heart-rate zone</li>
+          <li>An MVPA leaderboard that shows who has reached the goal</li>
+          <li>An interval timer and playlists for stations and circuits</li>
+          <li>Attendance from the same roster</li>
+          <li>A lesson summary with average heart rate, zone mix and MVPA per student</li>
+        </ul>
+        <div><a class="arrow-link" href="classmetrics-hr.html">ClassMetrics HR and your data →</a></div>
       </div>
-      <div>
-        <p>A frame-accurate video analysis app for coaches and PE teachers, built as a successor to Coach's Eye. Step through a clip one frame at a time, slow it down, draw on the movement, and put two attempts side by side. An athlete can also record a self-check and ask for feedback on specific still frames, without the clip ever leaving the device.</p>
-        <ul><li>Frame-accurate scrubbing</li><li>Telestration</li><li>Side by side</li><li>AI self-check</li></ul>
+      <div class="shots">
+        <figure class="shot reveal" style="--i:0">
+          <img src="media/chr-leaderboard.jpg" width="1500" height="2000" loading="lazy" alt="MVPA leaderboard ranking students by minutes in moderate to vigorous activity"/>
+          <figcaption><b>MVPA leaderboard</b>Who has reached the goal, and who needs a nudge.</figcaption>
+        </figure>
+        <figure class="shot reveal" style="--i:1">
+          <img src="media/chr-summary.jpg" width="1500" height="2000" loading="lazy" alt="Lesson summary with participants, average heart rate, zone mix chart and MVPA per student"/>
+          <figcaption><b>Lesson summary</b>Average heart rate, zone mix and MVPA for every student.</figcaption>
+        </figure>
+        <figure class="shot reveal" style="--i:2">
+          <img src="media/chr-attendance.jpg" width="1500" height="2000" loading="lazy" alt="Class attendance screen with twelve students marked present"/>
+          <figcaption><b>Attendance</b>Take roll from the same roster.</figcaption>
+        </figure>
+        <figure class="shot reveal" style="--i:3">
+          <img class="crop-top" src="media/chr-hrmax.jpg" width="1500" height="2000" loading="lazy" alt="Live tiles showing each student's percent of maximum heart rate"/>
+          <figcaption><b>Percent of max</b>Switch the tiles to %HRmax for a fairer view of effort.</figcaption>
+        </figure>
       </div>
-      <div><span class="status soon">Preparing for release</span></div>
-      <a class="arrow" href="coachsage.html" aria-label="Open the CoachSAGE page">&rarr;</a>
-    </div>
-    <div class="row acc-green">
-      <div class="rname">
-        <h3><a href="basal.html">Basal</a></h3>
-        <span class="plat">iPhone</span>
-      </div>
-      <div>
-        <p>An adaptive macro tracker. Describe a meal in plain language and AI turns it into calories and macros — everything after that, your targets, your estimated burn, your weekly correction, is deterministic math that compares its own prediction against your actual weight trend and adjusts itself, rather than a fixed formula you outgrow.</p>
-        <ul><li>Plain-language logging</li><li>Adaptive targets</li><li>Apple Health</li></ul>
-      </div>
-      <div><span class="status soon">Preparing for release</span></div>
-      <a class="arrow" href="basal.html" aria-label="Open the Basal page">&rarr;</a>
-    </div>
-    <div class="row acc-purple">
-      <div class="rname">
-        <h3><a href="field-tracker.html">FieldTracker</a></h3>
-        <span class="plat">Web</span>
-      </div>
-      <div>
-        <p>Field experience management for teacher education programs. Placements, hour logs, supervisor sign-off and accreditation reporting in one place.</p>
-        <ul><li>Three roles</li><li>Rubric assessment</li><li>Canvas integration</li><li>CSV export</li></ul>
-      </div>
-      <div><span class="status live">Live, in pilot</span></div>
-      <a class="arrow" href="field-tracker.html" aria-label="Open the FieldTracker page">&rarr;</a>
-    </div>
     </div>
   </div>
 </section>
 
 <section class="band" id="approach">
   <div class="wrap">
-    <div class="band-head">
-      <span class="label">Approach</span>
-      <h2>How these are built.</h2>
+    <div class="band-head reveal">
+      <div class="eyebrow">Approach</div>
+      <h2>Built for teachers, <span class="em">by one.</span></h2>
     </div>
     <div class="numbered">
-      <div>
+      <div class="reveal" style="--i:0">
         <span class="num">01</span>
         <h3>Process, not just outcomes</h3>
-        <p>A fitness score says what a student can do. Time in a heart-rate zone says what they actually did in your lesson. The second one is the part that tells you whether the teaching worked, and it is the harder one to collect, so that is where these tools start.</p>
+        <p>A fitness score says what a student can do. Time in a heart-rate zone says what they actually did in your lesson. The second one tells you whether the teaching worked, and it is the harder one to collect, so that is where these tools start.</p>
       </div>
-      <div>
+      <div class="reveal" style="--i:1">
         <span class="num">02</span>
-        <h3>As little as the job needs</h3>
-        <p>Video stays on the device it was recorded on. Class data stays on the iPad unless a teacher signs in to sync it. There are no analytics libraries and no advertising identifiers in any of these apps, because student data is not ours to collect.</p>
-      </div>
-      <div>
-        <span class="num">03</span>
         <h3>Built in real classes</h3>
         <p>These are written by a physical education teacher educator and used in real gyms and real placements: noisy, fast, and short on prep time. A tool that needs ten minutes of setup before class does not get used twice.</p>
       </div>
+      <div class="reveal" style="--i:2">
+        <span class="num">03</span>
+        <h3>Shaped by your requests</h3>
+        <p>What gets built next comes from teachers. If a new app or a change to an existing one would help in your gym, ask for it, and it goes on the list.</p>
+      </div>
+    </div>
+    <div class="callout-band reveal" style="margin-top:64px">
+      <p>What would help in your gym? <span>Ask for a new app, or a feature in one you already use.</span></p>
+      <a class="btn" href="request.html">Send a request <span aria-hidden="true">→</span></a>
     </div>
   </div>
 </section>
 
-<section class="strip">
-  <div class="wrap">
-    <p><strong>Every video and every heart-rate reading is written where it is recorded first.</strong> Nothing syncs off a device unless a teacher signs in to ask for that.</p>
-    <a href="index.html#approach">Read the approach &rarr;</a>
-  </div>
-</section>
-
-<section class="band band-paper" id="contact">
-  <div class="wrap">
-    <div class="band-head">
-      <span class="label">Contact</span>
-      <h2>Pilots, questions, and district use.</h2>
+<section class="band" id="contact">
+  <div class="wrap contact">
+    <div class="contact-main reveal">
+      <div class="eyebrow">Contact</div>
+      <h2>Questions, ideas, <span class="em">and help.</span></h2>
+      <a class="mail link" href="mailto:support@movemetric.org">support@movemetric.org</a>
+      <p>One person reads that inbox and normally replies within two business days. During the school year it can take a little longer.</p>
     </div>
-    <div class="contact">
-      <div class="contact-box">
-        <div class="label">Email</div>
-        <p style="margin-block:10px 14px"><a class="mail" href="mailto:support@movemetric.org">support@movemetric.org</a></p>
-        <p>One person reads that inbox and normally replies within two business days. During the school year it can take a little longer.</p>
-      </div>
-      <div class="contact-box">
-        <div class="label">Useful to include</div>
-        <ul>
-          <li>Which tool you are asking about</li>
-          <li>Your role, and roughly how many teachers or students are involved</li>
-          <li>Whether your district needs a data agreement or a security review first</li>
-          <li>For a bug report: the device, what you did, and what happened instead</li>
-        </ul>
-      </div>
+    <div class="contact-box reveal" style="--i:1">
+      <div class="eyebrow">Useful to include</div>
+      <ul>
+        <li>Which app you are asking about</li>
+        <li>What you teach, and the grade levels</li>
+        <li>For an idea or a feature, the <a class="link" href="request.html">request form</a> is quicker</li>
+        <li>For a bug report: the device, what you did, and what happened instead</li>
+      </ul>
     </div>
   </div>
 </section>
@@ -161,11 +185,11 @@
   <div class="wrap">
     <div class="foot-grid">
       <div class="about">
-        <a class="mm-brand" href="index.html"><span class="mm-dot" aria-hidden="true"></span><span>move<b>metric</b></span></a>
-        <p>Software for physical education teaching and teacher education, built by an educator who uses it.</p>
+        <a class="mm-brand" href="index.html" aria-label="Movemetric home"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="23" width="4.5" height="8" rx="1" fill="#5B8CFF"/><rect x="7.5" y="19" width="4.5" height="12" rx="1" fill="#2FC6A0"/><rect x="14" y="14" width="4.5" height="17" rx="1" fill="#F2C230"/><rect x="20.5" y="8" width="4.5" height="23" rx="1" fill="#FF8A3D"/><rect x="27" y="1" width="4.5" height="30" rx="1" fill="#E4572E"/></svg><span class="wm">move<b>metric</b></span></a>
+        <p>Technology that supports physical education teachers, built by a PE teacher educator who uses it.</p>
       </div>
       <div>
-        <h4>Products</h4>
+        <h4>Apps</h4>
         <a href="classmetrics-hr.html">ClassMetrics HR</a>
         <a href="coachsage.html">CoachSAGE</a>
         <a href="basal.html">Basal</a>
@@ -179,18 +203,18 @@
       </div>
       <div>
         <h4>Help</h4>
+        <a href="request.html">Request an app or feature</a>
         <a href="support.html">Support</a>
         <a href="privacy.html">Privacy</a>
         <a href="terms.html">Terms</a>
-        <a href="mailto:support@movemetric.org">Email us</a>
       </div>
     </div>
     <div class="foot-bottom">
-      <span>&copy; 2026 Movemetric</span>
+      <span>© 2026 Movemetric</span>
       <span>Educational use only. Not medical devices.</span>
     </div>
   </div>
 </footer>
-
+<script src="site.js"></script>
 </body>
 </html>

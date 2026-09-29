@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Request an app or feature | Movemetric</title>
+<meta name="description" content="Ask Movemetric for a new app for your gym, or a feature in ClassMetrics HR, CoachSAGE, Basal or FieldTracker."/>
+<link rel="icon" href="assets/logo-tile.svg" type="image/svg+xml"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="site.css"/>
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+<header class="site-head">
+  <div class="wrap">
+    <div class="head-left">
+      <a class="mm-brand" href="index.html" aria-label="Movemetric home"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="23" width="4.5" height="8" rx="1" fill="#5B8CFF"/><rect x="7.5" y="19" width="4.5" height="12" rx="1" fill="#2FC6A0"/><rect x="14" y="14" width="4.5" height="17" rx="1" fill="#F2C230"/><rect x="20.5" y="8" width="4.5" height="23" rx="1" fill="#FF8A3D"/><rect x="27" y="1" width="4.5" height="30" rx="1" fill="#E4572E"/></svg><span class="wm">move<b>metric</b></span></a>
+      <span class="page-tag">Requests</span>
+    </div>
+    <nav class="nav-links">
+      <a href="index.html#apps">Apps</a>
+      <a href="index.html#approach">Approach</a>
+      <a href="support.html">Support</a>
+      <a class="btn btn-sm" href="request.html">Request an app</a>
+    </nav>
+  </div>
+</header>
+<main>
+
+<section class="hero">
+  <div class="wrap request-grid">
+    <div class="request-side">
+      <div class="eyebrow">Requests</div>
+      <h1 class="display display-l"><span class="w" style="--i:0">Tell</span> <span class="w" style="--i:1">us</span> <span class="w" style="--i:2">what</span> <span class="w" style="--i:3">would</span> <span class="w" style="--i:4">help</span> <span class="w em" style="--i:5">in</span> <span class="w em" style="--i:6">your</span> <span class="w em" style="--i:7">gym.</span></h1>
+      <p class="lead">Ask for a new app, or a feature in one you already use. What gets built next comes from these requests.</p>
+      <div class="numbered" style="grid-template-columns:1fr;gap:24px;margin-top:12px">
+        <div>
+          <span class="num">01</span>
+          <h3 style="font-size:20px">Describe the problem</h3>
+          <p>What happens in your class that a tool could make easier. The problem matters more than the solution.</p>
+        </div>
+        <div>
+          <span class="num">02</span>
+          <h3 style="font-size:20px">One person reads it</h3>
+          <p>Every request is read by the person who builds the apps, and similar requests are grouped together.</p>
+        </div>
+        <div>
+          <span class="num">03</span>
+          <h3 style="font-size:20px">Hear back if you want to</h3>
+          <p>Leave an email and you will get a reply when there is news on your idea. Bug reports go faster through <a class="link" href="support.html">Support</a>.</p>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <form class="form" id="request-form" novalidate>
+        <fieldset class="field" data-required="type">
+          <legend>What are you asking for?</legend>
+          <div class="chips">
+            <label class="chip"><input type="radio" name="type" value="A new app"/><span>A new app</span></label>
+            <label class="chip"><input type="radio" name="type" value="A feature in an existing app"/><span>A feature in an existing app</span></label>
+          </div>
+          <span class="err">Choose one so the request goes to the right list.</span>
+        </fieldset>
+
+        <fieldset class="field" id="app-field" hidden data-required="app">
+          <legend>Which app?</legend>
+          <div class="chips">
+            <label class="chip pc-cm"><input type="radio" name="app" value="ClassMetrics HR"/><span><i></i>ClassMetrics HR</span></label>
+            <label class="chip pc-cs"><input type="radio" name="app" value="CoachSAGE"/><span><i></i>CoachSAGE</span></label>
+            <label class="chip pc-ba"><input type="radio" name="app" value="Basal"/><span><i></i>Basal</span></label>
+            <label class="chip pc-ft"><input type="radio" name="app" value="FieldTracker"/><span><i></i>FieldTracker</span></label>
+          </div>
+          <span class="err">Choose the app this feature is for.</span>
+        </fieldset>
+
+        <label class="field" data-required="details">
+          <span>What would help?</span>
+          <textarea name="details" rows="5" placeholder="For example: during fitness stations I can't see who is sitting out until the rotation ends."></textarea>
+          <span class="err">Add a sentence or two about what you need.</span>
+        </label>
+
+        <label class="field">
+          <span>What do you use for this today? <span class="opt">Optional</span></span>
+          <input name="today" type="text" placeholder="Paper, a spreadsheet, another app, nothing yet"/>
+        </label>
+
+        <label class="field">
+          <span>Your role</span>
+          <select name="role">
+            <option>PE teacher</option>
+            <option>Teacher educator</option>
+            <option>Coach</option>
+            <option>Other</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Grade levels you teach <span class="opt">Optional</span></span>
+          <input name="grades" type="text" placeholder="K–5, 6–8, high school, college"/>
+        </label>
+
+        <label class="field">
+          <span>Name <span class="opt">Optional</span></span>
+          <input name="name" type="text" autocomplete="name" placeholder="Your name"/>
+        </label>
+
+        <label class="field" data-check="email">
+          <span>Email <span class="opt">Optional</span></span>
+          <input name="email" type="email" autocomplete="email" placeholder="you@school.org"/>
+          <span class="hint">Only if you would like a reply.</span>
+          <span class="err">That email doesn't look complete.</span>
+        </label>
+
+        <div><button class="btn btn-primary" type="submit">Send request <span aria-hidden="true">→</span></button></div>
+      </form>
+
+      <div class="form form-done" id="request-done" hidden>
+        <div class="eyebrow">✓ Request sent</div>
+        <h2 id="done-title">Thanks.</h2>
+        <p id="done-body">One person reads every request. If you left an email, you will hear back when there is news on your idea.</p>
+        <div><a class="btn btn-text" href="request.html">Send another</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="about">
+        <a class="mm-brand" href="index.html" aria-label="Movemetric home"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="23" width="4.5" height="8" rx="1" fill="#5B8CFF"/><rect x="7.5" y="19" width="4.5" height="12" rx="1" fill="#2FC6A0"/><rect x="14" y="14" width="4.5" height="17" rx="1" fill="#F2C230"/><rect x="20.5" y="8" width="4.5" height="23" rx="1" fill="#FF8A3D"/><rect x="27" y="1" width="4.5" height="30" rx="1" fill="#E4572E"/></svg><span class="wm">move<b>metric</b></span></a>
+        <p>Technology that supports physical education teachers, built by a PE teacher educator who uses it.</p>
+      </div>
+      <div>
+        <h4>Apps</h4>
+        <a href="classmetrics-hr.html">ClassMetrics HR</a>
+        <a href="coachsage.html">CoachSAGE</a>
+        <a href="basal.html">Basal</a>
+        <a href="field-tracker.html">FieldTracker</a>
+      </div>
+      <div>
+        <h4>Also here</h4>
+        <a href="tools.html">Other work</a>
+        <a href="PETE345/">PETE 345 Learning Lab</a>
+        <a href="ref-freshness.html">Reference Freshness</a>
+      </div>
+      <div>
+        <h4>Help</h4>
+        <a href="request.html">Request an app or feature</a>
+        <a href="support.html">Support</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Movemetric</span>
+      <span>Educational use only. Not medical devices.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* Google Form connection.
+   Responses are sent to a Google Form so they collect in its linked Sheet.
+   Fill in the form's formResponse URL and the entry ID for each question
+   (from the form's "Get pre-filled link"). Until ACTION is set, the form
+   opens an email to support@movemetric.org instead. Multiple-choice
+   answers in the Google Form must match the values used on this page. */
+var GOOGLE_FORM = {
+  ACTION: '', // https://docs.google.com/forms/d/e/FORM_ID/formResponse
+  ENTRIES: {
+    type: '',    // What are you asking for?
+    app: '',     // Which app?
+    details: '', // What would help?
+    today: '',   // What do you use for this today?
+    role: '',    // Your role
+    grades: '',  // Grade levels you teach
+    name: '',    // Name
+    email: ''    // Email
+  }
+};
+
+(function () {
+  var form = document.getElementById('request-form');
+  var done = document.getElementById('request-done');
+  var appField = document.getElementById('app-field');
+  var emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+  function val(name) {
+    var el = form.elements[name];
+    if (!el) return '';
+    if (el instanceof RadioNodeList) return el.value || '';
+    return (el.value || '').trim();
+  }
+
+  function isFeature() { return val('type') === 'A feature in an existing app'; }
+
+  function check(field) {
+    var bad = false;
+    var req = field.getAttribute('data-required');
+    if (req && !(req === 'app' && !isFeature())) bad = !val(req);
+    if (field.getAttribute('data-check') === 'email') bad = !!val('email') && !emailRe.test(val('email'));
+    field.classList.toggle('has-error', bad);
+    return !bad;
+  }
+
+  form.addEventListener('change', function (e) {
+    if (e.target.name === 'type') appField.hidden = !isFeature();
+    var f = e.target.closest('.field');
+    if (f && f.classList.contains('has-error')) check(f);
+  });
+  // Clear an error as soon as it is fixed, while typing, so the layout has
+  // settled before the person reaches the button.
+  form.addEventListener('input', function (e) {
+    var f = e.target.closest('.field');
+    if (f && f.classList.contains('has-error')) check(f);
+  });
+  // Check a field when the person leaves it, unless they are heading for
+  // the submit button, which checks everything anyway. Changing the layout
+  // under the pointer there would make the click miss.
+  form.addEventListener('focusout', function (e) {
+    var f = e.target.closest('.field');
+    var toSubmit = e.relatedTarget && e.relatedTarget.type === 'submit';
+    if (f && !toSubmit && (e.target.tagName === 'TEXTAREA' || e.target.type === 'email')) check(f);
+  });
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var ok = true;
+    form.querySelectorAll('.field').forEach(function (f) { if (!f.hidden && !check(f)) ok = false; });
+    if (!ok) { var first = form.querySelector('.has-error input, .has-error textarea'); if (first) first.focus(); return; }
+
+    var data = {};
+    Object.keys(GOOGLE_FORM.ENTRIES).forEach(function (k) { data[k] = val(k); });
+    if (!isFeature()) data.app = '';
+
+    if (GOOGLE_FORM.ACTION) {
+      var body = new URLSearchParams();
+      Object.keys(data).forEach(function (k) {
+        if (data[k] && GOOGLE_FORM.ENTRIES[k]) body.append(GOOGLE_FORM.ENTRIES[k], data[k]);
+      });
+      fetch(GOOGLE_FORM.ACTION, { method: 'POST', mode: 'no-cors', body: body })
+        .then(function () { finish(data, false); })
+        .catch(function () { finish(data, true); });
+    } else {
+      finish(data, true);
+    }
+  });
+
+  function finish(data, viaEmail) {
+    var first = data.name ? data.name.split(/\s+/)[0] : '';
+    document.getElementById('done-title').textContent = first ? 'Thanks, ' + first + '.' : 'Thanks.';
+    if (viaEmail) {
+      var lines = [
+        'Request: ' + data.type + (data.app ? ' (' + data.app + ')' : ''),
+        '', data.details, '',
+        'Used today: ' + (data.today || '-'),
+        'Role: ' + data.role,
+        'Grades: ' + (data.grades || '-'),
+        'Name: ' + (data.name || '-')
+      ];
+      window.location.href = 'mailto:support@movemetric.org?subject=' +
+        encodeURIComponent('App or feature request') + '&body=' + encodeURIComponent(lines.join('\n'));
+      document.getElementById('done-body').textContent =
+        'Your email app should open with the request filled in. Press send there to finish. If nothing opened, email support@movemetric.org.';
+    }
+    form.hidden = true;
+    done.hidden = false;
+    done.scrollIntoView({ block: 'center' });
+  }
+})();
+</script>
+</body>
+</html>
