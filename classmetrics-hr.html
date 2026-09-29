@@ -31,7 +31,7 @@
   <div class="hero">
     <div class="hero-eyebrow">ClassMetrics HR</div>
     <h1>Class data, handled carefully.</h1>
-    <p class="updated">Last updated: September 2026</p>
+    <p class="updated">Effective September 27, 2026</p>
     <p class="lead">What the app stores on the iPad, what syncs when you sign in, and what schools need to know.</p>
   </div>
 
@@ -54,9 +54,10 @@
     </div>
 
     <ul>
-      <li><strong>Roster information you enter:</strong> student names or identifiers, class periods and groupings. What goes in is your choice, and initials or numbers work as well as full names.</li>
+      <li><strong>Roster information you enter:</strong> student names or identifiers, class periods and groupings, and optional details such as date of birth, resting or maximum heart rate, and notes. What goes in is your choice, and initials or numbers work as well as full names.</li>
+      <li><strong>Student photos</strong>, if you add them. Photos stay on the iPad and are never uploaded.</li>
       <li><strong>Heart-rate readings</strong> streamed from Bluetooth straps during a session, and the zone and MVPA figures calculated from them.</li>
-      <li><strong>Attendance and behaviour notes</strong> you record during class.</li>
+      <li><strong>Attendance, behaviour notes and fitness test results</strong> you record during class, and which strap is assigned to which student.</li>
       <li><strong>Your account details</strong> when you sign in: your email address and, if your sign-in provides it, your name. Nothing else about you.</li>
     </ul>
     <p>Sign-in offers Sign in with Apple and Google. Sign in with Apple can hide your real address behind a relay, and that works fine here.</p>
@@ -71,7 +72,8 @@
     </div>
 
     <p>When you are signed in, a snapshot of your classes, students and sessions is stored in Google Firebase (Firestore), under your account and readable only by it. That is what lets a second iPad show the same classes, and what restores your data if an iPad is lost.</p>
-    <p>Sync is off when you are signed out. Everything stays on the iPad in that case, and nothing leaves it.</p>
+    <p>Student photos and the detailed second-by-second heart-rate readings are left out of the synced copy and stay on the iPad. Settings lets you choose how long those detailed readings are kept; summaries and other records remain until you delete them.</p>
+    <p>Sync is off when you are signed out. Everything stays on the iPad in that case, and nothing leaves it. The demo workspace uses fictional students and simulated readings and never syncs.</p>
     <div class="callout">
       <p><strong>No advertising, no tracking, no sale of data.</strong> Class data is never used for advertising, never sold, and never shared with anyone outside the services that store it for you.</p>
     </div>
@@ -95,8 +97,10 @@
   <section class="section" id="music">
     <div class="section-header">
       <span class="section-num">05</span>
-      <h2>Apple Music</h2>
+      <h2>Bluetooth and Apple Music</h2>
     </div>
+
+    <p>Bluetooth is used only to find heart-rate straps and read their data. You can turn this permission off in the iPad's Settings app, and live heart rate will stop until it is turned back on.</p>
 
     <p>Segment playlists play through Apple Music using your own subscription on that iPad. Movemetric does not receive your listening history, and what you play is between you and Apple.</p>
 
@@ -110,7 +114,20 @@
     </div>
 
     <p>Export any class or session to CSV from the Reports screen, at any time.</p>
-    <p>To delete a student, a class or a session, delete it in the app; the change is carried to your synced copy. To remove everything, sign out on every iPad, delete the app, and email <a href="mailto:support@movemetric.org">support@movemetric.org</a> so the synced copy is deleted as well. Deletion requests are actioned within 30 days.</p>
+    <p>To delete a student, a class or a session, delete it in the app; the change is carried to your synced copy.</p>
+    <p>To delete your account, open <strong>Settings &rsaquo; Delete Account</strong> in the app and confirm who you are. This permanently deletes your account and its synced records, and clears class data and saved roster imports from that iPad. Deleting the app removes everything stored on that iPad. CSV files you exported are copies you control, and they are not affected.</p>
+    <p>If you can no longer sign in, or a school or parent asks for student records to be removed, email <a href="mailto:support@movemetric.org">support@movemetric.org</a>. Requests are handled within 30 days.</p>
+
+  </section>
+
+  <hr/>
+  <section class="section" id="contact">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <h2>Changes and contact</h2>
+    </div>
+
+    <p>If this policy changes, the effective date at the top will change with it. Questions about privacy or student data go to <a href="mailto:support@movemetric.org">support@movemetric.org</a>.</p>
 
   </section>
 
