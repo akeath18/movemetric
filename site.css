@@ -383,6 +383,23 @@ fieldset.field{border:0}
 .callout-blue{border-top-color:var(--mm-z1)}
 .contact-card{border:1px solid var(--border);background:var(--surface);border-radius:var(--radius-card);padding:24px}
 
+/* ---------- long-form guide (classmetrics-hr-guide.html) ---------- */
+.guide-links{font-family:var(--font-mono);font-size:12px;color:var(--text-subtle)}
+.guide-links a{text-decoration:underline;text-decoration-color:var(--action);text-decoration-thickness:2px;text-underline-offset:3px}
+.guide-links a:hover{color:var(--emphasis)}
+.section h3{font-size:20px;letter-spacing:-.02em;margin:28px 0 10px;scroll-margin-top:90px}
+.section h4{font-size:16px;font-weight:700;margin:22px 0 8px}
+.section ol.steps{list-style:none;counter-reset:step;display:grid;gap:10px;margin-bottom:16px}
+.section ol.steps li{counter-increment:step;font-size:15px;color:var(--text-muted);padding-left:34px;position:relative}
+.section ol.steps li::before{content:counter(step);position:absolute;left:0;top:0;width:22px;height:22px;border-radius:var(--radius-tag);background:var(--surface-sunk);font-family:var(--font-mono);font-size:12px;font-weight:500;color:var(--emphasis);display:grid;place-items:center}
+.table-wrap{overflow-x:auto;margin-block:6px 18px;border:1px solid var(--border);border-radius:var(--radius-panel);background:var(--surface)}
+.section table{width:100%;border-collapse:collapse;font-size:15px}
+.section th{font-family:var(--font-mono);font-size:12px;font-weight:500;color:var(--text-subtle);text-align:left;background:var(--surface-sunk);padding:10px 14px}
+.section td{color:var(--text-muted);padding:10px 14px;border-top:1px solid var(--border);vertical-align:top}
+.section td strong{color:var(--text);white-space:nowrap}
+.swatch{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:9px}
+
+
 /* ---------- footer ---------- */
 .site-foot{border-top:1px solid var(--border)}
 .site-foot .wrap{padding-block:48px 36px}
