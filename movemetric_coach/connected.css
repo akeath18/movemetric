@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;600&display=swap');
 /* Account and coaching workspace additions, scoped to the connected app. */
 #main form {display:grid;gap:16px}
 #main fieldset {border:1px solid var(--line);border-radius:10px;padding:14px}
@@ -16,3 +17,27 @@
 .conversation-message strong, .conversation-message small { font-size: .75rem; color: #526475; }
 .conversation-message p { text-align: left; white-space: pre-wrap; margin: 4px 0; padding: 12px 15px; background: #edf2ef; border-radius: 16px; overflow-wrap: anywhere; }
 .conversation-message.mine p { color: white; background: #164f3d; }
+
+/* MoveMetric brand guide: paper, rubber, zone colors, and suite typography. */
+:root{--ink:#1c1f1a;--muted:#5a564d;--paper:#f3efe6;--line:#d6cfbf;--accent:#b8431f;--soft:#fae7dd;--green:#176b59;font-family:'Schibsted Grotesk',sans-serif}
+body{background:var(--paper);color:var(--ink)}
+.coach-header{background:var(--paper);border-color:var(--line)}
+.header-inner{max-width:1200px;padding:18px 32px}
+.brand{gap:10px;letter-spacing:-.04em;font-size:20px;font-weight:400}
+.brand-mark{width:29px;height:29px;flex:none}.brand-word strong{font-weight:800}.product-name{border-left:1px solid var(--line);padding-left:14px;margin-left:4px;color:var(--muted);font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:0;font-weight:500}
+.header-link{min-height:40px;background:transparent;border-color:transparent;font-size:13px}
+.client-shell{max-width:1200px;padding:42px 32px 70px}
+.eyebrow{color:var(--accent);font-family:'Geist Mono',monospace;letter-spacing:0;text-transform:none;font-size:12px;font-weight:600}
+.eyebrow:before{content:'';display:inline-block;width:7px;height:7px;margin-right:9px;background:#e4572e;border-radius:50%;vertical-align:2px}
+h1,h2,h3{font-family:'Schibsted Grotesk',sans-serif;letter-spacing:-.04em}h1{font-size:clamp(42px,6vw,68px);font-weight:800;line-height:1.02}h2{font-weight:750}
+.hero p:not(.eyebrow){color:var(--muted);font-size:18px;line-height:1.55;max-width:520px}
+.card{background:#fbf9f4;border-color:var(--line);border-radius:10px;box-shadow:0 8px 28px rgba(28,31,26,.04)}
+button,.button{border-color:#c5bfae;border-radius:6px;background:#fbf9f4;color:var(--ink)}button:hover,.button:hover{border-color:var(--ink);background:#ede8dd}
+button.primary,.button.primary{background:var(--ink);border-color:var(--ink);color:#fff}button.primary:hover,.button.primary:hover{background:#3a3f37;color:#fff}
+button.accent{background:#e4572e;border-color:#e4572e;color:#1c1f1a}
+input,select,textarea{border-color:#aaa496;border-radius:6px;color:var(--ink)}:focus-visible{outline-color:#5b8cff}
+.notice{background:#f7e9df;border-color:#e9c6b5}.tag{background:#eae4d8}.tag.warm{background:#fae7dd;color:#9f3515}
+.client-shell .nav button[aria-current=page]{background:var(--ink)}.progress-track{background:#e3ddcf}.progress-track>span{background:#2b8069}.conversation-message p{background:#eae4d8}.conversation-message.mine p{background:#252923}
+#main:has(#login){display:grid;grid-template-columns:minmax(0,1fr) minmax(320px,440px);gap:64px;align-items:start;padding-top:clamp(55px,8vw,100px)}
+#main:has(#login) .hero{padding:22px 0}#main:has(#login) .hero h1{max-width:650px}#main:has(#login) .card{padding:32px}#main:has(#login) .card h2{font-size:26px}#main:has(#login) .card .muted{font-size:13px;line-height:1.5}#main:has(#login) .card .actions{gap:8px}#main:has(#login) .card .actions button{font-size:13px}
+@media(max-width:760px){.header-inner{padding:14px 16px}.brand{font-size:18px}.brand-mark{width:25px;height:25px}.product-name{padding-left:10px;margin-left:0;font-size:11px}.header-link{font-size:11px;padding:8px}.client-shell{padding:24px 16px 50px}#main:has(#login){display:block;padding-top:28px}#main:has(#login) .hero{padding:12px 0 24px}#main:has(#login) .card{padding:22px}.hero p:not(.eyebrow){font-size:16px}.client-shell .actions button{flex:1 1 auto}}
