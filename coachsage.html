@@ -41,7 +41,7 @@
     </div>
 
     <p>CoachSAGE records or imports a clip, lets you step through it, draw on it and compare two attempts, and hands a student an annotated still.</p>
-    <p>Clips stay on the device. There are no accounts, no cloud storage and no sync. One narrow exception exists, and it only happens when someone asks for it: when you request AI feedback, six to eight <strong>still frames</strong> are sent to our analysis service. Not the video, not the audio, not the rest of your library.</p>
+    <p>Clips stay on the device. There are no accounts, no cloud storage and no sync. One narrow exception exists, and it only happens when someone asks for it: when you request AI feedback, and only after you have allowed it, six to eight <strong>still frames</strong> and a few details about the skill are sent to <strong>Anthropic</strong>, whose Claude AI model writes the feedback. Not the video, not the audio, not the rest of your library.</p>
 
   </section>
 
@@ -55,7 +55,7 @@
     <ul>
       <li><strong>Video you record or import.</strong> Written into the app's own storage on the device. Never uploaded, never backed up to us.</li>
       <li><strong>Annotations and notes</strong> you add to a clip. Also on the device.</li>
-      <li><strong>Still frames, when you ask for feedback.</strong> Sent to our analysis service, passed to the AI provider that generates the feedback, and not kept afterwards.</li>
+      <li><strong>Still frames and skill details, when you ask for feedback.</strong> Six to eight frames from the clip, the skill name, the phases you picked, any notes you typed, the learner level, and joint positions measured on the device. The app asks your permission before the first analysis. They go through our server, hosted by Vercel, to the Anthropic Claude API, which writes the feedback. Our server keeps none of it. Anthropic does not use it to train its models and keeps it only for a limited period under its <a href="https://www.anthropic.com/legal/privacy">privacy policy</a>. You can withdraw permission in Settings → AI analysis, and nothing is sent while it is off.</li>
       <li><strong>A device identifier</strong> we generate ourselves and keep in the device keychain. It exists to count free analyses so the allowance cannot be reset by reinstalling. It is not your Apple Account, your name, or an advertising identifier, and it identifies a device to us and nothing else.</li>
       <li><strong>Subscription status</strong> from Apple. We are told whether a subscription is active. We never see your payment details.</li>
     </ul>
@@ -72,7 +72,7 @@
       <h2>Recording other people's children</h2>
     </div>
 
-    <p>This app gets pointed at students. Keeping video on the device is the decision the rest of the app is built around: there is no upload to consent to and no store of other people's children to breach.</p>
+    <p>This app gets pointed at students. Keeping video on the device is the decision the rest of the app is built around: the video itself is never uploaded, and there is no store of other people's children to breach. The still frames sent for AI feedback can show the athlete, which is why the app asks before sending them.</p>
     <p>If you record students, you are responsible for having permission to do so under your school's policy, and for how you share what you export. An annotated still you AirDrop to a student is out of the app's hands once it leaves.</p>
 
   </section>
