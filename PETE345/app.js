@@ -26,6 +26,7 @@
     confidence: {},
     modules: {},
     events: [],
+    responseQueue: [],
     syncId: "",
     syncKey: "",
     syncStatus: "local",
@@ -68,7 +69,7 @@
     return {
       studentId:state.syncId,syncKey:state.syncKey,displayName:state.studentName||"Student",pretestFinished:state.pretestFinished,
       pretestScore:scores().reduce((sum,item)=>sum+item.correct,0),modulesMastered:courseProgress(),currentModule:next.module?.id||ordered.find(m=>!moduleComplete(m.id))?.id||10,currentStep:next.title,
-      stepsComplete,totalSteps,eventCount:(state.events||[]).length,
+      stepsComplete,totalSteps,eventCount:(state.events||[]).length,responses:(state.responseQueue||[]).slice(0,40),
       modules:DATA.modules.map(module=>{const ms=moduleState(module.id);return {id:module.id,pathMode:prescription(module.id).key,lessonsComplete:module.lessons.filter((_,i)=>lessonRecord(module.id,i).done).length,lessonTotal:module.lessons.length,labsComplete:module.labs.filter((_,i)=>ms.labs[i]?.done).length,labTotal:module.labs.length,gateAttempts:ms.gate.attempts||0,gateScore:ms.gate.score||0,mastered:!!ms.gate.passed};})
     };
   }
@@ -81,7 +82,10 @@
       const result=await response.json();
       if(!response.ok)throw new Error(result.error||"sync failed");
       state.syncStatus="synced";state.lastSyncedAt=new Date(result.syncedAt).toISOString();state.instructorAdjustments=result.adjustments||[];
+      const acknowledged=new Set(result.receivedResponseIds||[]);
+      state.responseQueue=(state.responseQueue||[]).filter(item=>!acknowledged.has(item.id));
       localStorage.setItem(STORAGE_KEY,JSON.stringify(state));
+      if(acknowledged.size && state.responseQueue.length) scheduleSync();
     } catch (_) { state.syncStatus="local"; localStorage.setItem(STORAGE_KEY,JSON.stringify(state)); }
   }
 
@@ -89,6 +93,42 @@
     state.events = state.events || [];
     state.events.push({ type, detail, at: new Date().toISOString() });
     if (state.events.length > 250) state.events = state.events.slice(-250);
+    const module=DATA.modules.find(item=>item.id===detail.module);
+    if(type==="competency_gate_submitted" && module) captureGate(module,false);
+    if(type==="learning_segment_completed" && module) captureLesson(module,detail.lesson,false);
+    if(type==="evidence_lab_completed" && module) captureLab(module,detail.lab,false);
+  }
+
+  // Append-only evidence queue. The existing progress key, identity and module state are unchanged.
+  function capture(kind,moduleId,data) {
+    state.responseQueue=state.responseQueue||[];
+    state.responseQueue.push({id:crypto.randomUUID(),kind,moduleId:Number(moduleId),capturedAt:new Date().toISOString(),data:JSON.parse(JSON.stringify(data))});
+  }
+  function questionEvidence(item,answer) {
+    return {question:item.q,selected:answer===undefined?null:item.o[answer],correctAnswer:item.o[item.a],correct:answer===undefined?null:answer===item.a,explanation:item.x||""};
+  }
+  function captureGate(module,recovered) {
+    const gate=state.modules[module.id]?.gate;
+    if(!gate || !Object.keys(gate.answers||{}).length)return;
+    const items=(gate.form||[]).map(id=>module.gateBank.find(item=>item.id===id));
+    // Never regenerate a historical form: that would attribute answers to the wrong questions.
+    if(!items.length || items.some(item=>!item))return;
+    capture(gate.submitted?"gate_attempt":"gate_draft",module.id,{title:`Module ${module.id} competency gate`,attempt:gate.submitted?gate.attempts:undefined,score:gate.submitted?gate.score:undefined,total:items.length,recovered,questions:items.map((item,i)=>questionEvidence(item,gate.answers[i]))});
+  }
+  function captureLesson(module,index,recovered) {
+    const record=state.modules[module.id]?.lessons?.[index],lesson=module.lessons[index];
+    if(!record || typeof record!=="object" || (!record.explanation&&!Object.keys(record.answers||{}).length))return;
+    capture("lesson_evidence",module.id,{title:lesson.title,recovered,completed:!!record.done,text:record.explanation||"",questions:(lesson.checkpoint||[]).map((item,i)=>questionEvidence(item,record.answers?.[i]))});
+  }
+  function captureLab(module,index,recovered) {
+    const record=state.modules[module.id]?.labs?.[index];if(!record?.notes)return;
+    capture("lab_evidence",module.id,{title:module.labs[index].title,recovered,completed:!!record.done,safety:!!record.safety,text:record.notes});
+  }
+  function recoverExistingEvidence() {
+    if(state.detailBackfillVersion===1)return;
+    if(Object.keys(state.pretestAnswers||{}).length)capture("baseline_snapshot",0,{title:"Baseline assessment",recovered:true,questions:DATA.pretest.map(item=>questionEvidence(item,state.pretestAnswers[item.id]))});
+    DATA.modules.forEach(module=>{captureGate(module,true);module.lessons.forEach((_,i)=>captureLesson(module,i,true));module.labs.forEach((_,i)=>captureLab(module,i,true));});
+    state.detailBackfillVersion=1;
   }
 
   function esc(value) {
@@ -528,21 +568,24 @@
     app.querySelectorAll("[data-next-action]").forEach(el=>el.addEventListener("click",()=>{const target=el.dataset.nextAction;const anchor=el.dataset.anchor;track("next_action_started",{target,anchor});save();go(target);if(anchor)setTimeout(()=>document.getElementById(anchor)?.scrollIntoView({behavior:"smooth"}),120);}));
     app.querySelectorAll("[data-slide]").forEach(el=>el.addEventListener("click",()=>{const player=app.querySelector("[data-study-player]");if(!player)return;const [m,i]=player.dataset.studyPlayer.split(":");const record=lessonRecord(m,i);record.mediaSlide=Number(el.dataset.slide);track("visual_chapter_viewed",{module:Number(m),lesson:Number(i),chapter:record.mediaSlide});save();render();window.scrollTo({top:0,behavior:"smooth"});}));
     app.querySelectorAll("[data-finish-media]").forEach(el=>el.addEventListener("click",()=>{const [m,i]=el.dataset.finishMedia.split(":");const record=lessonRecord(m,i);record.mediaComplete=true;track("visual_lesson_completed",{module:Number(m),lesson:Number(i)});save();go(`#/module/${m}`);setTimeout(()=>document.getElementById(`lesson-${i}`)?.scrollIntoView({behavior:"smooth"}),120);}));
-    app.querySelectorAll("[data-answer]").forEach(el=>el.addEventListener("click",()=>{const q=DATA.pretest[state.pretestIndex];state.pretestAnswers[q.id]=Number(el.dataset.answer);save();render();}));
+    app.querySelectorAll("[data-answer]").forEach(el=>el.addEventListener("click",()=>{const q=DATA.pretest[state.pretestIndex];state.pretestAnswers[q.id]=Number(el.dataset.answer);capture("baseline_response",0,{title:`Baseline question ${q.id}`,questions:[questionEvidence(q,state.pretestAnswers[q.id])]});save();render();}));
     app.querySelectorAll("[data-confidence]").forEach(el=>el.addEventListener("click",()=>{const q=DATA.pretest[state.pretestIndex];state.confidence[q.id]=Number(el.dataset.confidence);save();render();}));
     const next=app.querySelector("[data-test-next]"); if(next) next.addEventListener("click",()=>{if(state.pretestIndex===29){state.pretestFinished=true;track("pretest_completed",{score:scores().reduce((s,x)=>s+x.correct,0)});save();render();window.scrollTo(0,0);}else{state.pretestIndex++;save();render();window.scrollTo(0,0);}});
     const prev=app.querySelector("[data-test-prev]"); if(prev) prev.addEventListener("click",()=>{state.pretestIndex=Math.max(0,state.pretestIndex-1);save();render();window.scrollTo(0,0);});
-    app.querySelectorAll("[data-lesson-answer]").forEach(el=>el.addEventListener("click",()=>{const [m,i,qIndex,a]=el.dataset.lessonAnswer.split(":");const record=lessonRecord(m,i);record.answers[qIndex]=Number(a);record.done=false;save();render();document.getElementById(`lesson-${i}`)?.scrollIntoView();}));
+    app.querySelectorAll("[data-lesson-answer]").forEach(el=>el.addEventListener("click",()=>{const [m,i,qIndex,a]=el.dataset.lessonAnswer.split(":");const record=lessonRecord(m,i);record.answers[qIndex]=Number(a);record.done=false;const lesson=DATA.modules.find(item=>item.id===Number(m)).lessons[Number(i)];capture("retrieval_response",m,{title:lesson.title,questions:[questionEvidence(lesson.checkpoint[Number(qIndex)],Number(a))]});save();render();document.getElementById(`lesson-${i}`)?.scrollIntoView();}));
     app.querySelectorAll("[data-lesson-explain]").forEach(el=>el.addEventListener("input",()=>{const [m,i]=el.dataset.lessonExplain.split(":");const record=lessonRecord(m,i);record.explanation=el.value;if(el.value.trim().length<80)record.done=false;save();const lesson=DATA.modules.find(item=>item.id===Number(m)).lessons[Number(i)];const button=app.querySelector(`[data-lesson-complete="${m}:${i}"]`);if(button)button.disabled=!lessonReady(lesson,record);const small=el.parentElement.querySelector("small");if(small)small.textContent=`${el.value.length}/80 minimum characters · principle and application required`;}));
     app.querySelectorAll("[data-lesson-complete]").forEach(el=>el.addEventListener("click",()=>{const [m,i]=el.dataset.lessonComplete.split(":");const record=lessonRecord(m,i);const lesson=DATA.modules.find(item=>item.id===Number(m)).lessons[Number(i)];if(lessonReady(lesson,record)){record.done=true;track("learning_segment_completed",{module:Number(m),lesson:Number(i)});save();render();document.getElementById(`lesson-${i}`)?.scrollIntoView();}}));
     app.querySelectorAll("[data-lab-notes]").forEach(el=>el.addEventListener("input",()=>{const [m,i]=el.dataset.labNotes.split(":");const ms=moduleState(m);const lab=DATA.modules.find(item=>item.id===Number(m)).labs[Number(i)];ms.labs[i]=Object.assign({notes:"",safety:false,done:false},ms.labs[i],{notes:el.value});if(el.value.trim().length<lab.minChars)ms.labs[i].done=false;save();const button=app.querySelector(`[data-lab-complete="${m}:${i}"]`);if(button)button.disabled=!(ms.labs[i].safety&&el.value.trim().length>=lab.minChars);const small=el.parentElement.querySelector("small");if(small)small.textContent=`${el.value.length}/${lab.minChars} minimum characters · safety confirmation required`;}));
     app.querySelectorAll("[data-lab-safety]").forEach(el=>el.addEventListener("change",()=>{const [m,i]=el.dataset.labSafety.split(":");const ms=moduleState(m);ms.labs[i]=Object.assign({notes:"",safety:false,done:false},ms.labs[i],{safety:el.checked});if(!el.checked)ms.labs[i].done=false;save();render();document.getElementById("lab")?.scrollIntoView();}));
     app.querySelectorAll("[data-lab-complete]").forEach(el=>el.addEventListener("click",()=>{const [m,i]=el.dataset.labComplete.split(":");const savedLab=moduleState(m).labs[i];const lab=DATA.modules.find(item=>item.id===Number(m)).labs[Number(i)];if(savedLab&&savedLab.safety&&savedLab.notes.trim().length>=lab.minChars){savedLab.done=true;track("evidence_lab_completed",{module:Number(m),lab:Number(i)});save();render();document.getElementById("lab")?.scrollIntoView();}}));
-    app.querySelectorAll("[data-gate-answer]").forEach(el=>el.addEventListener("click",()=>{const [m,q,a]=el.dataset.gateAnswer.split(":");const gate=moduleState(m).gate;if(!gate.submitted){gate.answers[q]=Number(a);save();render();document.getElementById("gate")?.scrollIntoView();}}));
+    app.querySelectorAll("[data-gate-answer]").forEach(el=>el.addEventListener("click",()=>{const [m,q,a]=el.dataset.gateAnswer.split(":");const gate=moduleState(m).gate;if(!gate.submitted){gate.answers[q]=Number(a);captureGate(DATA.modules.find(item=>item.id===Number(m)),false);save();render();document.getElementById("gate")?.scrollIntoView();}}));
     app.querySelectorAll("[data-remediation-note]").forEach(el=>el.addEventListener("input",()=>{const id=Number(el.dataset.remediationNote);const gate=moduleState(id).gate;gate.remediationNote=el.value;save();const module=DATA.modules.find(item=>item.id===id);const ready=gate.requiredLessons.every(index=>lessonRecord(id,index).done)&&labsComplete(module)&&el.value.trim().length>=120;const button=app.querySelector(`[data-gate-retry="${id}"]`);if(button)button.disabled=!ready;const small=el.parentElement.querySelector("small");if(small)small.textContent=`${el.value.length}/120 minimum characters`;}));
     app.querySelectorAll("[data-gate-submit]").forEach(el=>el.addEventListener("click",()=>{const id=Number(el.dataset.gateSubmit);const gate=moduleState(id).gate;const items=gateQuestions(DATA.modules[id-1]);gate.score=items.filter((item,i)=>gate.answers[i]===item.a).length;gate.attempts++;gate.submitted=true;if(gate.score>=4){gate.passed=true;gate.remediationRequired=false;}else{gate.passed=false;gate.remediationRequired=true;gate.requiredLessons=[...new Set(items.filter((item,i)=>gate.answers[i]!==item.a).map(item=>item.lesson))];gate.remediationNote="";}track("competency_gate_submitted",{module:id,score:gate.score,attempt:gate.attempts,passed:gate.passed});save();render();document.getElementById("gate")?.scrollIntoView();}));
     app.querySelectorAll("[data-gate-retry]").forEach(el=>el.addEventListener("click",()=>{const id=Number(el.dataset.gateRetry);const module=DATA.modules.find(item=>item.id===id);const gate=moduleState(id).gate;if(gate.submitted&&!gate.passed){const ready=gate.requiredLessons.every(index=>lessonRecord(id,index).done)&&labsComplete(module)&&(gate.remediationNote||"").trim().length>=120;if(!ready)return;}gate.lastForm=[...gate.form];gate.form=selectGateForm(module,gate.lastForm);gate.answers={};gate.submitted=false;gate.score=0;gate.remediationRequired=false;gate.requiredLessons=[];gate.remediationNote="";save();render();document.getElementById("gate")?.scrollIntoView();}));
     app.querySelectorAll("[data-print]").forEach(el=>el.addEventListener("click",()=>window.print()));
+    app.querySelectorAll("[data-lesson-explain]").forEach(el=>el.addEventListener("change",()=>{const [m,i]=el.dataset.lessonExplain.split(":");captureLesson(DATA.modules.find(item=>item.id===Number(m)),Number(i),false);save();}));
+    app.querySelectorAll("[data-lab-notes]").forEach(el=>el.addEventListener("change",()=>{const [m,i]=el.dataset.labNotes.split(":");captureLab(DATA.modules.find(item=>item.id===Number(m)),Number(i),false);save();}));
+    app.querySelectorAll("[data-remediation-note]").forEach(el=>el.addEventListener("change",()=>{const id=Number(el.dataset.remediationNote);capture("remediation_response",id,{title:"Gate remediation reflection",text:el.value});save();}));
     app.querySelectorAll("[data-copy-report]").forEach(el=>el.addEventListener("click",async()=>{await navigator.clipboard.writeText(reportText());el.textContent="Copied!";setTimeout(()=>el.textContent="Copy progress report",1500);}));
   }
 
@@ -550,6 +593,7 @@
   window.addEventListener("DOMContentLoaded", () => {
     if(!state.syncId) state.syncId=crypto.randomUUID();
     if(!state.syncKey){const bytes=crypto.getRandomValues(new Uint8Array(32));state.syncKey=Array.from(bytes,b=>b.toString(16).padStart(2,"0")).join("");}
+    recoverExistingEvidence();
     if (!state.startedAt) { state.startedAt = new Date().toISOString(); save(); }
     else { localStorage.setItem(STORAGE_KEY,JSON.stringify(state)); scheduleSync(); }
     render();
