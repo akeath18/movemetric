@@ -51,11 +51,32 @@
 
   function save() {
     state.lastVisit = new Date().toISOString();
+    state.resumeRoute = window.location?.hash || "#/home";
+    state.resumeDirty = true;
+    changes++;
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     scheduleSync();
   }
 
   let syncTimer;
+  let changes=0, syncing=false, syncAgain=false, newer=null;
+  const snapshotFields=["version","studentName","pretestStarted","pretestFinished","pretestIndex","pretestAnswers","confidence","modules","events","startedAt","lastVisit","resumeRoute"];
+  function snapshotOf(record) {
+    return Object.fromEntries(snapshotFields.filter(key=>Object.hasOwn(record,key)).map(key=>[key,record[key]]));
+  }
+  function restore(result,id,key) {
+    if(!result.snapshot || !result.revision)throw Error("No saved work is available.");
+    if(state.resumeDirty || (state.syncId!==id && (state.studentName||state.pretestStarted))) {
+      localStorage.setItem(STORAGE_KEY+"-resume-backup",JSON.stringify(snapshotOf(state)));
+    }
+    const replacement=Object.assign(blank(),snapshotOf(result.snapshot),{syncId:id,syncKey:key,resumeRevision:result.revision,resumeDirty:false,detailBackfillVersion:1,responseQueue:id===state.syncId?state.responseQueue:[]});
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(replacement));
+    state=replacement;newer=null;
+    const route=state.resumeRoute||"";
+    window.location.hash=/^#\/(?:home|path|pretest|module\/(?:[1-9]|10)|study\/(?:[1-9]|10)\/\d+)$/.test(route)?route:state.pretestFinished?"#/path":"#/pretest";
+    render();
+    scheduleSync();
+  }
   function scheduleSync() {
     clearTimeout(syncTimer);
     syncTimer = setTimeout(syncProgress, 1200);
@@ -75,18 +96,30 @@
   }
 
   async function syncProgress() {
-    if (!state.syncId || !state.syncKey || !navigator.onLine) return;
+    if (!state.syncId || !state.syncKey || !navigator.onLine || newer) return;
+    if(syncing){syncAgain=true;return;}
+    syncing=true;
+    const record=state, sentChanges=changes;
     try {
       state.syncStatus="syncing";
-      const response=await fetch(PROGRESS_API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(syncSummary())});
+      const response=await fetch(PROGRESS_API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({...syncSummary(),revision:state.resumeRevision,snapshot:snapshotOf(state)})});
       const result=await response.json();
+      if(state!==record)return;
+      if(response.status===409 && result.snapshot) {
+        if(!state.resumeDirty)restore(result,state.syncId,state.syncKey);
+        else {newer=result;state.syncStatus="local";render();}
+        return;
+      }
       if(!response.ok)throw new Error(result.error||"sync failed");
+      if(result.revision)state.resumeRevision=result.revision;
+      if(sentChanges===changes && result.revision)state.resumeDirty=false;
       state.syncStatus="synced";state.lastSyncedAt=new Date(result.syncedAt).toISOString();state.instructorAdjustments=result.adjustments||[];
       const acknowledged=new Set(result.receivedResponseIds||[]);
       state.responseQueue=(state.responseQueue||[]).filter(item=>!acknowledged.has(item.id));
       localStorage.setItem(STORAGE_KEY,JSON.stringify(state));
       if(acknowledged.size && state.responseQueue.length) scheduleSync();
-    } catch (_) { state.syncStatus="local"; localStorage.setItem(STORAGE_KEY,JSON.stringify(state)); }
+    } catch (_) { if(state===record){state.syncStatus="local"; localStorage.setItem(STORAGE_KEY,JSON.stringify(state));} }
+    finally {syncing=false;if(syncAgain){syncAgain=false;scheduleSync();}}
   }
 
   function track(type, detail = {}) {
@@ -241,6 +274,7 @@
           <a class="${active === "home" ? "active" : ""}" href="#/home">Course</a>
           <a class="${active === "pretest" ? "active" : ""}" href="#/pretest">Pretest</a>
           <a class="${active === "path" ? "active" : ""}" href="#/path">My path</a>
+          <button type="button" class="button" data-resume-open>Resume on this device</button>
         </nav>
         <div class="header-progress" title="Modules mastered"><span>${progress}/10</span><i><b style="width:${progress * 10}%"></b></i></div>
       </header>`;
@@ -551,10 +585,34 @@
     else if (hash === "#/pretest") { if (!state.pretestStarted) { state.pretestStarted = true; save(); } app.innerHTML = pretest(); }
     else if (hash === "#/path") app.innerHTML = pathView();
     else app.innerHTML = home();
+    app.insertAdjacentHTML("beforeend",`<dialog data-resume-dialog aria-label="Resume on this device"><form data-resume-form><h2>Resume on this device</h2><p>Enter the private code from your instructor.</p><label>Resume code <input name="resumeCode" type="password" required autocomplete="off" spellcheck="false"></label><p data-resume-message role="status"></p><button type="submit">Resume my work</button> <button type="button" data-resume-close>Cancel</button></form></dialog>`);
+    if(newer)app.insertAdjacentHTML("afterbegin",'<section role="status" style="padding:1rem;background:#fff3d6;color:#18231c">Newer work is saved on another device. This browser has unsynced edits. <button data-load-latest>Load latest synced work</button></section>');
     bind();
   }
 
   function bind() {
+    const dialog=app.querySelector("[data-resume-dialog]");
+    app.querySelector("[data-resume-open]")?.addEventListener("click",()=>dialog.showModal());
+    app.querySelector("[data-resume-close]")?.addEventListener("click",()=>dialog.close());
+    app.querySelector("[data-load-latest]")?.addEventListener("click",()=>{
+      if(window.confirm("Load the newer synced work? A local backup of this browser’s edits will be kept.")) {
+        try{restore(newer,state.syncId,state.syncKey);}catch{window.alert("Unable to restore. The work on this browser was not replaced.");}
+      }
+    });
+    app.querySelector("[data-resume-form]")?.addEventListener("submit",async event=>{
+      event.preventDefault();
+      const form=event.currentTarget, input=form.elements.resumeCode, code=input.value.trim().toLowerCase();
+      const status=form.querySelector("[data-resume-message]"), button=form.querySelector('[type="submit"]');
+      button.disabled=true;status.textContent="Looking up your saved work…";
+      try{
+        const response=await fetch(PROGRESS_API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({code})});
+        const result=await response.json();
+        if(!response.ok)throw Error(result.error||"Could not resume your work.");
+        if((state.resumeDirty || (state.syncId!==result.studentId && (state.studentName||state.pretestStarted))) && !window.confirm("Load your synced record on this browser? A local backup of the current work will be kept.")){status.textContent="Nothing changed.";return;}
+        restore(result,result.studentId,state.syncId===result.studentId&&!state.syncKey.startsWith("pete-")?state.syncKey:code);
+      }catch(error){status.textContent=error.message||"Could not resume your work.";}
+      finally{button.disabled=false;input.value="";}
+    });
     const nameInput=app.querySelector("[data-student-name]"); if(nameInput) nameInput.addEventListener("input",()=>{state.studentName=nameInput.value;save();});
     app.querySelectorAll("[data-scroll]").forEach(el=>el.addEventListener("click",()=>document.getElementById(el.dataset.scroll)?.scrollIntoView({behavior:"smooth"})));
     app.querySelectorAll("[data-go]").forEach(el=>el.addEventListener("click",()=>go(el.dataset.go)));
@@ -590,6 +648,7 @@
   }
 
   window.addEventListener("hashchange", render);
+  window.addEventListener("online", scheduleSync);
   window.addEventListener("DOMContentLoaded", () => {
     if(!state.syncId) state.syncId=crypto.randomUUID();
     if(!state.syncKey){const bytes=crypto.getRandomValues(new Uint8Array(32));state.syncKey=Array.from(bytes,b=>b.toString(16).padStart(2,"0")).join("");}
